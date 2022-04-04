@@ -7,16 +7,12 @@ import javax.persistence.*;
 
 @Getter
 @NoArgsConstructor
-@IdClass(RoadPathID.class)
 @Entity
 public class RoadPath {
 
     @Id
-    @ManyToOne
-    @JoinColumn(name = "id")
-    private Road road;
+    private Long id;
 
-    @Id
     private int seq;
 
     private String spot_name;
@@ -29,4 +25,7 @@ public class RoadPath {
 
     private double lng;
 
+    @ManyToOne // RoadPath.road (단방향)
+    @JoinColumn(name = "Road_id")
+    private Road road;
 }
