@@ -44,10 +44,6 @@ public class Road {
     private double start_lng;
 
     @NotNull
-    @Column(length = 400)
-    private String road_path;
-
-    @NotNull
     private String agency_tel;
 
     @NotNull
