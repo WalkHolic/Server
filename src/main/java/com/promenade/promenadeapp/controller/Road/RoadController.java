@@ -1,8 +1,8 @@
-package com.promenade.promenadeapp.controller;
+package com.promenade.promenadeapp.controller.Road;
 
 import com.promenade.promenadeapp.domain.Road.Road;
 import com.promenade.promenadeapp.dto.RoadNearInterface;
-import com.promenade.promenadeapp.service.RoadService;
+import com.promenade.promenadeapp.service.Road.RoadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
