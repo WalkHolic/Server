@@ -32,8 +32,8 @@ public class UserRoadService {
         return userRoadRepository.save(userRoad).getId();
     }
 
+    public List<UserRoad> getUserRoads(Long userId) {
+        return userRoadRepository.findByUserId(userId);
 
-    public List<UserRoad> getUserRoads() {
-        return userRoadRepository.findAll();
     }
 }
