@@ -4,10 +4,7 @@ import com.promenade.promenadeapp.domain.Road.Road;
 import com.promenade.promenadeapp.dto.RoadNearInterface;
 import com.promenade.promenadeapp.service.Road.RoadService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
