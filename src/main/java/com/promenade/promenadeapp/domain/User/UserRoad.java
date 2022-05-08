@@ -1,16 +1,18 @@
 package com.promenade.promenadeapp.domain.User;
 
+import com.promenade.promenadeapp.domain.BaseTimeEntity;
 import com.promenade.promenadeapp.domain.Road.Road;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
 @Entity
-public class UserRoad {
+public class UserRoad extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
