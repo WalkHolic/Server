@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
@@ -24,12 +23,12 @@ public class User extends BaseTimeEntity {
 
     private String email;
 
-    private String password;
+    private String picture;
 
     @Builder
-    public User(String name, String email, String password) {
+    public User(String name, String email, String picture) {
         this.name = name;
         this.email = email;
-        this.password = password;
+        this.picture = picture;
     }
 }
