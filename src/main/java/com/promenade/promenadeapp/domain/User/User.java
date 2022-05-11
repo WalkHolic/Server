@@ -19,6 +19,8 @@ public class User extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String googleId;
+
     private String name;
 
     private String email;
@@ -26,7 +28,8 @@ public class User extends BaseTimeEntity {
     private String picture;
 
     @Builder
-    public User(String name, String email, String picture) {
+    public User(String googleId, String name, String email, String picture) {
+        this.googleId = googleId;
         this.name = name;
         this.email = email;
         this.picture = picture;
