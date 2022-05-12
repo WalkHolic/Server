@@ -36,5 +36,6 @@ out/
 ### VS Code ###
 .vscode/
 
-# aws 관련 properties
-/**/application-aws.properties
+# aws, auth 관련 properties
+application-aws.properties
+application-auth.properties

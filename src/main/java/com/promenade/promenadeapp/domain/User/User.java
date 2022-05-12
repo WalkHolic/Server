@@ -1,5 +1,6 @@
 package com.promenade.promenadeapp.domain.User;
 
+import com.promenade.promenadeapp.domain.BaseTimeEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,22 +13,25 @@ import javax.persistence.Id;
 @Getter
 @NoArgsConstructor
 @Entity
-public class User {
+public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String googleId;
+
     private String name;
 
     private String email;
 
-    private String password;
+    private String picture;
 
     @Builder
-    public User(String name, String email, String password) {
+    public User(String googleId, String name, String email, String picture) {
+        this.googleId = googleId;
         this.name = name;
         this.email = email;
-        this.password = password;
+        this.picture = picture;
     }
 }

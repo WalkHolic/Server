@@ -10,10 +10,12 @@
 //import org.junit.jupiter.api.extension.ExtendWith;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.test.context.SpringBootTest;
+//import org.springframework.test.context.ActiveProfiles;
 //import org.springframework.test.context.junit.jupiter.SpringExtension;
 //
 //import static org.assertj.core.api.Assertions.assertThat;
 //
+//import java.time.LocalDateTime;
 //import java.util.List;
 //
 //@ExtendWith(SpringExtension.class)
@@ -39,7 +41,7 @@
 //        User user = User.builder()
 //                .name("철수")
 //                .email("chelsu3@google.com")
-//                .password("156456465")
+//                .picture("156456465")
 //                .build();
 //
 //        userRepository.save(user);
@@ -79,5 +81,51 @@
 //        assertThat(foundUserRoad.getId()).isNotNull();
 //        assertThat(foundUserRoad.getUser().getId()).isNotNull();
 //
+//    }
+//
+//    @Test
+//    public void BaseTimeEntity_등록() {
+//        //given
+//        LocalDateTime now = LocalDateTime.of(2022, 5, 8, 0, 0, 0);
+//
+//        User user = User.builder()
+//                .name("철수")
+//                .email("chelsu3@google.com")
+//                .picture("156456465")
+//                .build();
+//
+//        userRepository.save(user);
+//
+//        String trail_name = "나만의 산책로";
+//        String description = "내 집앞 풍산역 근처 산책로입니다";
+//        double distance = 3.235;
+//        String start_addr = "경기도 수원시 팔달구 우만동 04-5";
+//        String trail_point = "[{" +
+//                "        lat: 37.2781968," +
+//                "        lon: 127.0429034" +
+//                "    }, {" +
+//                "        lat: 37.279260473122769," +
+//                "        lon: 127.04385995864686" +
+//                "    }]";
+//        UserRoad userRoad = UserRoad.builder()
+//                .trail_name(trail_name)
+//                .description(description)
+//                .distance(distance)
+//                .start_addr(start_addr)
+//                .trail_point(trail_point)
+//                .user(user)
+//                .build();
+//
+//        userRoadRepository.save(userRoad);
+//
+//        //when
+//        List<UserRoad> userRoads = userRoadRepository.findAll();
+//
+//        //then
+//        UserRoad userRoad1 = userRoads.get(0);
+//        System.out.println(">>>>>> createdate="+userRoad1.getCreatedDate()+"," +
+//                "modifiedDate="+userRoad1.getModifiedDate());
+//        assertThat(userRoad1.getCreatedDate()).isAfter(now);
+//        assertThat(userRoad1.getModifiedDate()).isAfter(now);
 //    }
 //}

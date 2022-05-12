@@ -16,7 +16,9 @@
 //import org.springframework.boot.web.server.LocalServerPort;
 //import org.springframework.http.HttpStatus;
 //import org.springframework.http.ResponseEntity;
+//import org.springframework.test.context.ActiveProfiles;
 //import org.springframework.test.context.junit.jupiter.SpringExtension;
+//import org.springframework.test.context.web.WebAppConfiguration;
 //
 //import java.util.List;
 //
@@ -80,7 +82,7 @@
 //        //then
 //        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 ////        assertThat(responseEntity.getBody()).isGreaterThan(0L);
-//        List<UserRoad> all = userRoadService.getUserRoads();
+//        List<UserRoad> all = userRoadService.getUserRoads(user_id);
 //        assertThat(all.get(0).getUser().getId()).isNotNull();
 //        assertThat(all.get(0).getTrail_name()).isEqualTo(trail_name);
 //        assertThat(all.get(0).getDescription()).isEqualTo(description);
