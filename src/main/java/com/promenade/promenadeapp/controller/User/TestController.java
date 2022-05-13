@@ -1,12 +1,17 @@
 package com.promenade.promenadeapp.controller.User;
 
 import com.promenade.promenadeapp.domain.User.User;
+import com.promenade.promenadeapp.domain.User.UserRoad;
 import com.promenade.promenadeapp.dto.ResponseDto;
+import com.promenade.promenadeapp.dto.TestRequestDto;
 import com.promenade.promenadeapp.dto.UserDto;
+import com.promenade.promenadeapp.dto.UserRoadRequestDto;
 import com.promenade.promenadeapp.security.TokenProvider;
+import com.promenade.promenadeapp.service.User.UserRoadService;
 import com.promenade.promenadeapp.service.User.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,17 +19,47 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/auth")
-public class UserController {
+@RequestMapping("/test")
+public class TestController {
 
     private final UserService userService;
 
+    private final UserRoadService userRoadService;
+
     private final TokenProvider tokenProvider;
 
-    @PostMapping("/google")
+    @PostMapping("/user")
+    public ResponseEntity<?> saveUserRoad(@RequestBody TestRequestDto requestDto) {
+        try {
+            User foundUserByGoogleId = userService.findByGoogleId(requestDto.getGoogleId());
+
+            UserRoad userRoad = UserRoad.builder()
+                    .id(null) // saveUserRoad()에서 자동 추가
+                    .userGoogleId(requestDto.getGoogleId()) // googleId 추가
+                    .trailName(requestDto.getTrailName())
+                    .description(requestDto.getDescription())
+                    .distance(requestDto.getDistance())
+                    .startAddr(requestDto.getStartAddr())
+                    .trailPoint(requestDto.getTrailPoint())
+                    .user(foundUserByGoogleId) // user 추가
+                    .build();
+            List<UserRoad> userRoads = userRoadService.saveUserRoad(userRoad);
+
+            ResponseDto<UserRoad> response = ResponseDto.<UserRoad>builder()
+                    .data(userRoads)
+                    .build();
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder().error(e.getMessage()).build();
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @PostMapping("/token")
     public ResponseEntity<?> saveOrLogin(@RequestBody String idTokenString) throws GeneralSecurityException, IOException {
         try {
             UserDto userDto = userService.verifyGoogleIdToken(idTokenString);
@@ -76,51 +111,4 @@ public class UserController {
             return ResponseEntity.badRequest().body(responseDto);
         }
     }
-
-    /* Test code */
-    @PostMapping("/test/signup")
-    public ResponseEntity<?> registerUserTest(@RequestBody UserDto userDto) {
-        try {
-            User user = User.builder()
-                    .googleId(userDto.getGoogleId())
-                    .email(userDto.getEmail())
-                    .name(userDto.getName())
-                    .picture(userDto.getPicture())
-                    .build();
-            User registeredUser = userService.saveTest(user);
-            UserDto responseUserDto = UserDto.builder()
-                    .id(registeredUser.getId())
-                    .googleId(registeredUser.getGoogleId())
-                    .email(registeredUser.getEmail())
-                    .name(registeredUser.getName())
-                    .picture(registeredUser.getPicture())
-                    .build();
-            return ResponseEntity.ok().body(responseUserDto);
-        } catch (Exception e) {
-            ResponseDto responseDto = ResponseDto.builder().error(e.getMessage()).build();
-            return ResponseEntity.badRequest().body(responseDto);
-        }
-    }
-
-    @PostMapping("/test/signin")
-    public ResponseEntity<?> authenticateTest(@RequestBody UserDto userDto) {
-        User user = userService.findByEmail(userDto.getEmail());
-        if (user != null) {
-            String token = tokenProvider.createToken(user);
-            UserDto responseUserDto = UserDto.builder()
-                    .googleId(user.getGoogleId())
-                    .email(user.getEmail())
-                    .name(user.getName())
-                    .picture(user.getPicture())
-                    .token(token)
-                    .build();
-            return ResponseEntity.ok().body(responseUserDto);
-        } else {
-            ResponseDto responseDto = ResponseDto.builder()
-                    .error("Login failed")
-                    .build();
-            return ResponseEntity.badRequest().body(responseDto);
-        }
-    }
-    /* end */
 }

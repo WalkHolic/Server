@@ -35,7 +35,7 @@ public class TokenProvider {
                 .compact();
     }
 
-    public String validateAndGetUserId(String token) {
+    public String validateAndGetUserAuth(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(SECRET_KEY)
                 .parseClaimsJws(token)

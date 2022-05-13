@@ -35,11 +35,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 토큰 검사하기
             if (token != null && !token.equalsIgnoreCase("null")) {
                 // userId 가져오기. 위조됐다면 예외 처리됨
-                String userId = tokenProvider.validateAndGetUserId(token);
-                log.info("'Authenticated user ID: '" + userId);
+                String userGoogleId = tokenProvider.validateAndGetUserAuth(token);
+                log.info("'Authenticated user ID: '" + userGoogleId);
                 // 인증 완료. SecurityContextHolder에 등록해야 인증된 사용자라고 생각한다.
                 AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userId, // 인증된 사용자 정보.
+                        userGoogleId, // 인증된 사용자 정보.
                         null,
                         AuthorityUtils.NO_AUTHORITIES
                 );

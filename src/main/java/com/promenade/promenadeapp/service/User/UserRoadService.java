@@ -1,39 +1,57 @@
 package com.promenade.promenadeapp.service.User;
 
-import com.promenade.promenadeapp.domain.User.User;
-import com.promenade.promenadeapp.domain.User.UserRepository;
 import com.promenade.promenadeapp.domain.User.UserRoad;
 import com.promenade.promenadeapp.domain.User.UserRoadRepository;
-import com.promenade.promenadeapp.dto.UserRoadRequestDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserRoadService {
 
-    private final UserRepository userRepository;
     private final UserRoadRepository userRoadRepository;
 
-    public Long saveUserRoad(UserRoadRequestDto requestDto) {
-        UserRoad userRoad = UserRoad.builder()
-                .user(userRepository.findById(requestDto.getUser_id())
-                        .orElseThrow(() -> new IllegalArgumentException("해당 user id가 없습니다.")))
-                .trail_name(requestDto.getTrail_name())
-                .description(requestDto.getDescription())
-                .distance(requestDto.getDistance())
-                .start_addr(requestDto.getStart_addr())
-                .trail_point(requestDto.getTrail_point())
-                .build();
-        return userRoadRepository.save(userRoad).getId();
+    private void validate(final UserRoad userRoad) {
+        if (userRoad == null) {
+            log.warn("UserRoadRequestDto cannot be null.");
+            throw new RuntimeException("UserRoadRequestDto cannot be null.");
+        }
+        if (userRoad.getUserGoogleId() == null) {
+            log.warn("Unknown user.");
+            throw new RuntimeException("Unknown user.");
+        }
     }
 
-    public List<UserRoad> getUserRoads(Long userId) {
-        return userRoadRepository.findByUserId(userId);
+    public List<UserRoad> saveUserRoad(UserRoad userRoad) {
+        validate(userRoad);
+
+        userRoadRepository.save(userRoad);
+        log.info("UserRoad Id: {} is saved.", userRoad.getId());
+        return userRoadRepository.findByUserGoogleId(userRoad.getUserGoogleId());
 
     }
+
+    public List<UserRoad> getUserRoads(String userGoogleId) {
+        return userRoadRepository.findByUserGoogleId(userGoogleId);
+    }
+
+    public UserRoad findByTrailName(String trailName) {
+        return userRoadRepository.findByTrailName(trailName);
+    }
+
+    public List<UserRoad> deleteUserRoad(UserRoad userRoad) {
+        validate(userRoad);
+        try {
+            userRoadRepository.delete(userRoad);
+        } catch (Exception e) {
+            log.error("error deleting UserRoad ", userRoad.getId(), e);
+            throw new RuntimeException("error deleting UserRoad " + userRoad.getId());
+        }
+        return userRoadRepository.findByUserGoogleId(userRoad.getUserGoogleId());
+    }
+
 }
