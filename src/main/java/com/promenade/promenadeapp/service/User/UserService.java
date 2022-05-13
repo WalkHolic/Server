@@ -64,7 +64,7 @@ public class UserService {
     }
 
     @Transactional
-    public Long save(UserDto userDto) {
+    public User save(UserDto userDto) {
         if (userDto == null || userDto.getGoogleId() == null) {
             throw new RuntimeException("Invalid arguments");
         }
@@ -75,7 +75,7 @@ public class UserService {
                 .picture(userDto.getPicture())
                 .build();
 
-        return userRepository.save(user).getId();
+        return userRepository.save(user);
     }
 
     /* Test Code */
@@ -95,6 +95,10 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
     /* end */
+
+    public User findByGoogleId(String googleId) {
+        return userRepository.findByGoogleId(googleId);
+    }
 
     public User getByCredentials(String googleId, String email) {
         return userRepository.findByGoogleIdAndEmail(googleId, email);

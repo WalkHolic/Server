@@ -1,13 +1,11 @@
 package com.promenade.promenadeapp.domain.User;
 
 import com.promenade.promenadeapp.domain.BaseTimeEntity;
-import com.promenade.promenadeapp.domain.Road.Road;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
@@ -18,28 +16,35 @@ public class UserRoad extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String trail_name;
+    @Column(name = "user_google_id")
+    private String userGoogleId;
+
+    @Column(name = "trail_name", unique = true)
+    private String trailName;
 
     private String description;
 
     private double distance;
 
-    private String start_addr;
+    @Column(name = "start_addr")
+    private String startAddr;
 
-    private String trail_point;
+    @Column(name = "trail_point")
+    private String trailPoint;
 
     @ManyToOne // RoadPath.road (단방향)
     @JoinColumn(name = "user_id")
     private User user;
 
     @Builder
-    public UserRoad(Long id, String trail_name, String description, double distance, String start_addr, String trail_point, User user) {
+    public UserRoad(Long id, String userGoogleId, String trailName, String description, double distance, String startAddr, String trailPoint, User user) {
         this.id = id;
-        this.trail_name = trail_name;
+        this.userGoogleId = userGoogleId;
+        this.trailName = trailName;
         this.description = description;
         this.distance = distance;
-        this.start_addr = start_addr;
-        this.trail_point = trail_point;
+        this.startAddr = startAddr;
+        this.trailPoint = trailPoint;
         this.user = user;
     }
 }

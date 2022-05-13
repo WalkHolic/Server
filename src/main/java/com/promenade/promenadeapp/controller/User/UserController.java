@@ -33,22 +33,21 @@ public class UserController {
                         .error("google id token이 유효하지 않습니다.").build();
                 return ResponseEntity.badRequest().body(responseDto);
             }
-            String googleId = userDto.getGoogleId();
-            String email = userDto.getEmail();
-
-            User user = userService.getByCredentials(googleId, email);
-            String token = tokenProvider.createToken(user);
-            UserDto responseUserDto = UserDto.builder()
-                    .googleId(user.getGoogleId())
-                    .email(user.getEmail())
-                    .name(user.getName())
-                    .picture(user.getPicture())
-                    .token(token)
-                    .build();
 
             // Login (이미 있는 사용자임)
-            if (userService.existsByGoogleId(googleId)) {
+            if (userService.existsByGoogleId(userDto.getGoogleId())) {
+                User user = userService.getByCredentials(userDto.getGoogleId(), userDto.getEmail());
                 if (user != null) {
+                    String token = tokenProvider.createToken(user);
+                    UserDto responseUserDto = UserDto.builder()
+                            .id(user.getId())
+                            .googleId(user.getGoogleId())
+                            .email(user.getEmail())
+                            .name(user.getName())
+                            .picture(user.getPicture())
+                            .token(token)
+                            .build();
+                    System.out.println("사용자가 로그인 되었습니다. id=" + user.getId());
                     return ResponseEntity.ok().body(responseUserDto);
                 } else {
                     ResponseDto responseDto = ResponseDto.builder()
@@ -59,8 +58,17 @@ public class UserController {
             }
             // Save (회원가입 DB에 저장)
             else {
-                Long userId = userService.save(userDto);
-                System.out.println("새로운 사용자가 db에 저장되었습니다. id=" + userId);
+                User user = userService.save(userDto);
+                String token = tokenProvider.createToken(user);
+                UserDto responseUserDto = UserDto.builder()
+                        .id(user.getId())
+                        .googleId(user.getGoogleId())
+                        .email(user.getEmail())
+                        .name(user.getName())
+                        .picture(user.getPicture())
+                        .token(token)
+                        .build();
+                System.out.println("새로운 사용자가 db에 저장되었습니다. id=" + user.getId());
                 return ResponseEntity.ok().body(responseUserDto); // save한 후에도 JWT token 전달해주기
             }
         } catch (Exception e) {
@@ -83,6 +91,7 @@ public class UserController {
                     .build();
             User registeredUser = userService.saveTest(user);
             UserDto responseUserDto = UserDto.builder()
+                    .id(registeredUser.getId())
                     .googleId(registeredUser.getGoogleId())
                     .email(registeredUser.getEmail())
                     .name(registeredUser.getName())
