@@ -26,9 +26,6 @@ public class UserService {
     @Value("${google.client-id}")
     private String googleClientId;
 
-    @Value("${google.client-secret}")
-    private String googleClientSecret;
-
     private final UserRepository userRepository;
 
     @Transactional
