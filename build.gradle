@@ -25,7 +25,7 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'com.h2database:h2'
-	compileOnly 'org.projectlombok:lombok'
+	implementation 'org.projectlombok:lombok'
 	compileOnly 'com.google.api-client:google-api-client:1.34.0'
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 	annotationProcessor 'org.projectlombok:lombok'
