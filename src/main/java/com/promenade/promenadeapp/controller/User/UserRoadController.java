@@ -26,13 +26,16 @@ public class UserRoadController {
     public ResponseEntity<?> getUserRoads(@AuthenticationPrincipal String googleId) {
         List<UserRoad> userRoads = userRoadService.getUserRoads(googleId);
         if (userRoads.isEmpty()) {
-            ResponseDto responseDto = ResponseDto.builder()
+            ResponseDto response = ResponseDto.builder()
                     .error("사용자의 커스텀 산책로가 없습니다.")
                     .build();
-            return ResponseEntity.badRequest().body(responseDto);
+            return ResponseEntity.badRequest().body(response);
         }
 
-        return ResponseEntity.ok().body(userRoads);
+        ResponseDto<UserRoad> response = ResponseDto.<UserRoad>builder()
+                .data(userRoads)
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 
     @PostMapping

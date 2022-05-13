@@ -72,9 +72,7 @@ public class UserController {
                 return ResponseEntity.ok().body(responseUserDto); // save한 후에도 JWT token 전달해주기
             }
         } catch (Exception e) {
-            ResponseDto responseDto = ResponseDto.builder()
-                    .error(e.getMessage())
-                    .build();
+            ResponseDto responseDto = ResponseDto.builder().error(e.getMessage()).build();
             return ResponseEntity.badRequest().body(responseDto);
         }
     }
@@ -99,7 +97,7 @@ public class UserController {
                     .build();
             return ResponseEntity.ok().body(responseUserDto);
         } catch (Exception e) {
-            ResponseDto<Object> responseDto = ResponseDto.builder().error(e.getMessage()).build();
+            ResponseDto responseDto = ResponseDto.builder().error(e.getMessage()).build();
             return ResponseEntity.badRequest().body(responseDto);
         }
     }

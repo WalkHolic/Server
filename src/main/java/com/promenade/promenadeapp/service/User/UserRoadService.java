@@ -1,6 +1,5 @@
 package com.promenade.promenadeapp.service.User;
 
-import com.promenade.promenadeapp.domain.User.UserRepository;
 import com.promenade.promenadeapp.domain.User.UserRoad;
 import com.promenade.promenadeapp.domain.User.UserRoadRepository;
 import lombok.RequiredArgsConstructor;
