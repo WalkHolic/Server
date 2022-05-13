@@ -1,4 +1,4 @@
-package com.promenade.promenadeapp.controller.User;
+package com.promenade.promenadeapp.controller;
 
 import com.promenade.promenadeapp.domain.User.User;
 import com.promenade.promenadeapp.domain.User.UserRoad;
