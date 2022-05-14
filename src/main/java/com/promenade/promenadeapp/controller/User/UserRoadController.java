@@ -4,6 +4,7 @@ import com.promenade.promenadeapp.domain.User.User;
 import com.promenade.promenadeapp.domain.User.UserRoad;
 import com.promenade.promenadeapp.dto.ResponseDto;
 import com.promenade.promenadeapp.dto.UserRoadRequestDto;
+import com.promenade.promenadeapp.dto.UserRoadResponseDto;
 import com.promenade.promenadeapp.service.User.UserRoadService;
 import com.promenade.promenadeapp.service.User.UserService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -27,14 +29,15 @@ public class UserRoadController {
         List<UserRoad> userRoads = userRoadService.getUserRoads(googleId);
         if (userRoads.isEmpty()) {
             ResponseDto response = ResponseDto.builder()
-                    .error("사용자의 커스텀 산책로가 없습니다.")
+                    .error("사용자의 커스텀 산책로가 없습니다. userGoogleId = " + googleId)
                     .build();
             return ResponseEntity.badRequest().body(response);
         }
-
-        ResponseDto<UserRoad> response = ResponseDto.<UserRoad>builder()
-                .data(userRoads)
+        List<UserRoadResponseDto> responseDtos = userRoads.stream().map(UserRoadResponseDto::new).collect(Collectors.toList());
+        ResponseDto<UserRoadResponseDto> response = ResponseDto.<UserRoadResponseDto>builder()
+                .data(responseDtos)
                 .build();
+
         return ResponseEntity.ok().body(response);
     }
 
@@ -56,9 +59,11 @@ public class UserRoadController {
                     .build();
             List<UserRoad> userRoads = userRoadService.saveUserRoad(userRoad);
 
-            ResponseDto<UserRoad> response = ResponseDto.<UserRoad>builder()
-                    .data(userRoads)
+            List<UserRoadResponseDto> responseDtos = userRoads.stream().map(UserRoadResponseDto::new).collect(Collectors.toList());
+            ResponseDto<UserRoadResponseDto> response = ResponseDto.<UserRoadResponseDto>builder()
+                    .data(responseDtos)
                     .build();
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             ResponseDto response = ResponseDto.builder().error(e.getMessage()).build();
@@ -66,28 +71,26 @@ public class UserRoadController {
         }
     }
 
-    @DeleteMapping
+    @DeleteMapping("/id/{id}")
     public ResponseEntity<?> deleteUserRoad(@AuthenticationPrincipal String googleId,
-                                            @RequestBody UserRoadRequestDto requestDto) {
+                                            @PathVariable Long id) {
         try {
-            User foundUserByGoogleId = userService.findByGoogleId(googleId);
-            Long foundRoadId = userRoadService.findByTrailName(requestDto.getTrailName()).getId();
-
-            UserRoad userRoad = UserRoad.builder()
-                    .id(foundRoadId) // trailName(unique key)으로 찾은 road id
-                    .userGoogleId(googleId) // googleId 추가
-                    .trailName(requestDto.getTrailName())
-                    .description(requestDto.getDescription())
-                    .distance(requestDto.getDistance())
-                    .startAddr(requestDto.getStartAddr())
-                    .trailPoint(requestDto.getTrailPoint())
-                    .user(foundUserByGoogleId) // user 추가
-                    .build();
+            Long userId = userService.getUserIdByGoogleId(googleId);
+            UserRoad userRoad = userRoadService.findById(id);
+            if (userId != userRoad.getUser().getId()) {
+                ResponseDto response = ResponseDto.builder()
+                        .error("요청한 산책로 id가 로그인한 당신의 산책로가 아닙니다. roadId = " + id)
+                        .build();
+                return ResponseEntity.badRequest().body(response);
+            }
 
             List<UserRoad> userRoads = userRoadService.deleteUserRoad(userRoad);
-            ResponseDto<UserRoad> response = ResponseDto.<UserRoad>builder()
-                    .data(userRoads)
+
+            List<UserRoadResponseDto> responseDtos = userRoads.stream().map(UserRoadResponseDto::new).collect(Collectors.toList());
+            ResponseDto<UserRoadResponseDto> response = ResponseDto.<UserRoadResponseDto>builder()
+                    .data(responseDtos)
                     .build();
+
             return ResponseEntity.ok().body(response);
 
         } catch (Exception e) {

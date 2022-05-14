@@ -31,16 +31,16 @@ public class UserRoadService {
 
         userRoadRepository.save(userRoad);
         log.info("UserRoad Id: {} is saved.", userRoad.getId());
-        return userRoadRepository.findByUserGoogleId(userRoad.getUserGoogleId());
-
+        return userRoadRepository.findByUserId(userRoad.getUser().getId());
     }
 
     public List<UserRoad> getUserRoads(String userGoogleId) {
         return userRoadRepository.findByUserGoogleId(userGoogleId);
     }
 
-    public UserRoad findByTrailName(String trailName) {
-        return userRoadRepository.findByTrailName(trailName);
+    public UserRoad findById(Long id) {
+        return userRoadRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 UserRoad가 없습니다. id = " + id));
     }
 
     public List<UserRoad> deleteUserRoad(UserRoad userRoad) {

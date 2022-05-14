@@ -75,6 +75,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public Long getUserIdByGoogleId(String googleId) {
+        User foundUser = userRepository.findByGoogleId(googleId);
+        return foundUser.getId();
+    }
+
     /* Test Code */
     public User saveTest(User user) {
         if (user == null || user.getEmail() == null) {

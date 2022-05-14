@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
 
 @RequiredArgsConstructor
 @RestController
@@ -48,7 +49,10 @@ public class UserController {
                             .token(token)
                             .build();
                     System.out.println("사용자가 로그인 되었습니다. id=" + user.getId());
-                    return ResponseEntity.ok().body(responseUserDto);
+                    ResponseDto<UserDto> response = ResponseDto.<UserDto>builder()
+                            .data(Arrays.asList(responseUserDto))
+                            .build();
+                    return ResponseEntity.ok(response);
                 } else {
                     ResponseDto responseDto = ResponseDto.builder()
                             .error("Login failed")
@@ -69,7 +73,10 @@ public class UserController {
                         .token(token)
                         .build();
                 System.out.println("새로운 사용자가 db에 저장되었습니다. id=" + user.getId());
-                return ResponseEntity.ok().body(responseUserDto); // save한 후에도 JWT token 전달해주기
+                ResponseDto<UserDto> response = ResponseDto.<UserDto>builder()
+                        .data(Arrays.asList(responseUserDto))
+                        .build();
+                return ResponseEntity.ok(response); // save한 후에도 JWT token 전달해주기
             }
         } catch (Exception e) {
             ResponseDto responseDto = ResponseDto.builder().error(e.getMessage()).build();

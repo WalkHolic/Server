@@ -15,17 +15,20 @@ public class RoadPath {
 
     private int seq;
 
-    private String spot_name;
+    private String spotName;
 
-    private String road_addr;
+    private String roadAddr;
 
-    private String lot_addr;
+    private String lotAddr;
 
-    private double lat;
+    private Double lat;
 
-    private double lng;
+    private Double lng;
+
+    private String pngPath;
 
     @ManyToOne // RoadPath.road (단방향)
-    @JoinColumn(name = "Road_id")
+    @JoinColumn(name = "road_id")
     private Road road;
+
 }
