@@ -32,7 +32,9 @@ public class RoadPathController {
             return ResponseEntity.badRequest().body(response);
         }
         List<RoadPathResponseDto> responseDto = foundRoadPaths.stream().map(RoadPathResponseDto::new).collect(Collectors.toList());
-        ResponseDto<RoadPathResponseDto> response = ResponseDto.<RoadPathResponseDto>builder().data(responseDto).build();
+        ResponseDto<RoadPathResponseDto> response = ResponseDto.<RoadPathResponseDto>builder()
+                .data(responseDto)
+                .build();
         return ResponseEntity.ok(response);
     }
 }

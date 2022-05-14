@@ -1,5 +1,6 @@
 package com.promenade.promenadeapp.service.Park;
 
+import com.promenade.promenadeapp.domain.Park.Park;
 import com.promenade.promenadeapp.domain.Park.ParkRepository;
 import com.promenade.promenadeapp.dto.ParkNearInterface;
 import lombok.RequiredArgsConstructor;
@@ -15,5 +16,10 @@ public class ParkService {
 
     public List<ParkNearInterface> getNearParks(double lat, double lng) {
         return parkRepository.findNearParks(lat, lng);
+    }
+
+    public Park findById(Long id) {
+        return parkRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 공원이 없습니다. id = " + id));
     }
 }

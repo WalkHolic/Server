@@ -1,7 +1,10 @@
 package com.promenade.promenadeapp.domain.Park;
 
+import lombok.Getter;
+
 import javax.persistence.*;
 
+@Getter
 @Table(name = "park_info")
 @Entity
 public class Park {

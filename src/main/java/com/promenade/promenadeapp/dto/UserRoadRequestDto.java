@@ -16,7 +16,7 @@ public class UserRoadRequestDto {
     private String trailPoint;
 
     @Builder
-    public UserRoadRequestDto(String trailName, String description, double distance, String startAddr, String trailPoint) {
+    public UserRoadRequestDto(Long id, String trailName, String description, double distance, String startAddr, String trailPoint) {
         this.trailName = trailName;
         this.description = description;
         this.distance = distance;
@@ -24,13 +24,4 @@ public class UserRoadRequestDto {
         this.trailPoint = trailPoint;
     }
 
-    public static UserRoad toEntity(UserRoadRequestDto requestDto) {
-        return UserRoad.builder()
-                .trailName(requestDto.getTrailName())
-                .description(requestDto.getDescription())
-                .distance(requestDto.getDistance())
-                .startAddr(requestDto.getStartAddr())
-                .trailPoint(requestDto.getTrailPoint())
-                .build();
-    }
 }
