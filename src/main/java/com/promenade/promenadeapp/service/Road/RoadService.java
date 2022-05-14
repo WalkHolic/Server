@@ -3,10 +3,8 @@ package com.promenade.promenadeapp.service.Road;
 import com.promenade.promenadeapp.domain.Road.Road;
 import com.promenade.promenadeapp.domain.Road.RoadRepository;
 import com.promenade.promenadeapp.dto.RoadNearInterface;
-import com.promenade.promenadeapp.dto.UserRoadRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
