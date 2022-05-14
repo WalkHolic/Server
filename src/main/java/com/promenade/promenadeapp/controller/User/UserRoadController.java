@@ -3,7 +3,9 @@ package com.promenade.promenadeapp.controller.User;
 import com.promenade.promenadeapp.domain.User.User;
 import com.promenade.promenadeapp.domain.User.UserRoad;
 import com.promenade.promenadeapp.dto.ResponseDto;
+import com.promenade.promenadeapp.dto.RoadPathResponseDto;
 import com.promenade.promenadeapp.dto.UserRoadRequestDto;
+import com.promenade.promenadeapp.dto.UserRoadResponseDto;
 import com.promenade.promenadeapp.service.User.UserRoadService;
 import com.promenade.promenadeapp.service.User.UserService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -31,10 +34,11 @@ public class UserRoadController {
                     .build();
             return ResponseEntity.badRequest().body(response);
         }
-
-        ResponseDto<UserRoad> response = ResponseDto.<UserRoad>builder()
-                .data(userRoads)
+        List<UserRoadResponseDto> responseDtos = userRoads.stream().map(UserRoadResponseDto::new).collect(Collectors.toList());
+        ResponseDto<UserRoadResponseDto> response = ResponseDto.<UserRoadResponseDto>builder()
+                .data(responseDtos)
                 .build();
+
         return ResponseEntity.ok().body(response);
     }
 
@@ -56,9 +60,11 @@ public class UserRoadController {
                     .build();
             List<UserRoad> userRoads = userRoadService.saveUserRoad(userRoad);
 
-            ResponseDto<UserRoad> response = ResponseDto.<UserRoad>builder()
-                    .data(userRoads)
+            List<UserRoadResponseDto> responseDtos = userRoads.stream().map(UserRoadResponseDto::new).collect(Collectors.toList());
+            ResponseDto<UserRoadResponseDto> response = ResponseDto.<UserRoadResponseDto>builder()
+                    .data(responseDtos)
                     .build();
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             ResponseDto response = ResponseDto.builder().error(e.getMessage()).build();
@@ -85,9 +91,12 @@ public class UserRoadController {
                     .build();
 
             List<UserRoad> userRoads = userRoadService.deleteUserRoad(userRoad);
-            ResponseDto<UserRoad> response = ResponseDto.<UserRoad>builder()
-                    .data(userRoads)
+
+            List<UserRoadResponseDto> responseDtos = userRoads.stream().map(UserRoadResponseDto::new).collect(Collectors.toList());
+            ResponseDto<UserRoadResponseDto> response = ResponseDto.<UserRoadResponseDto>builder()
+                    .data(responseDtos)
                     .build();
+
             return ResponseEntity.ok().body(response);
 
         } catch (Exception e) {
