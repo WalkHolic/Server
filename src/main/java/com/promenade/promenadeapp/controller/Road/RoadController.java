@@ -10,21 +10,22 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/road")
 public class RoadController {
 
     private final RoadService roadService;
 
-    @GetMapping("/road/all")
+    @GetMapping("/all")
     public List<Road> getRoads() {
         return roadService.getAllRoads();
     }
 
-    @GetMapping("/road/id/{id}")
+    @GetMapping("/id/{id}")
     public Road findById(@PathVariable Long id) {
         return roadService.findById(id);
     }
 
-    @GetMapping("/road/nearRoads")
+    @GetMapping("/nearRoads")
     public List<RoadNearInterface> getNearRoads(@RequestParam double lat, @RequestParam double lng) {
         return roadService.getNearRoads(lat, lng);
     }
