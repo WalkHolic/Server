@@ -9,13 +9,23 @@ import java.util.List;
 
 public interface ParkRepository extends JpaRepository<Park, Long> {
 
-    // 반경 5km 이내 시작 주소가 있는 road 반환 (d, id, road_name)
-    @Query(value = "SELECT ( 6371 * acos ( cos ( radians(lat) ) * cos( radians(:lat) ) * cos( radians(lng) - radians(:lng) ) + sin ( radians(lat) ) * sin( radians(:lat) ) )\n" +
-            "        ) AS d, id, park_id, name, type, addr_new, addr, lat, lng, area, facility_sport, facility_amuse, facility_conv, facility_cul, facility_etc, updated, manage_agency, contact, data_base_date, provider_code, provider_name\n" +
+    // 반경 5km 이내 공원 조회
+    @Query(value = "SELECT *, ( 6371 * acos ( cos ( radians(lat) ) * cos( radians(:lat) ) * cos( radians(lng) - radians(:lng) ) + sin ( radians(lat) ) * sin( radians(:lat) ) )\n" +
+            "        ) AS d\n" +
             "FROM park_info\n" +
             "HAVING d < 5\n" +
             "ORDER BY d\n" +
             "LIMIT 0 , 20;", nativeQuery = true)
     List<ParkNearInterface> findNearParks(@Param("lat") double lat, @Param("lng") double lng);
+
+    // 필터링 기능 + 반경 5km 이내 공원 조회
+    @Query(value = "SELECT *, ( 6371 * acos ( cos ( radians(lat) ) * cos( radians(:lat) ) * cos( radians(lng) - radians(:lng) ) + sin ( radians(lat) ) * sin( radians(:lat) ) )\n" +
+            "        ) AS d\n" +
+            "FROM park_info\n" +
+            "WHERE facility_sport like %:filter% or facility_conv like %:filter% or facility_cul like %:filter% or facility_etc like %:filter%\n" +
+            "HAVING d < 5\n" +
+            "ORDER BY d\n" +
+            "LIMIT 0 , 20;", nativeQuery = true)
+    List<ParkNearInterface> searchByFilters(@Param("lat") double lat, @Param("lng") double lng, @Param("filter") String filter);
 
 }

@@ -1,15 +1,21 @@
 package com.promenade.promenadeapp.controller.Park;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.promenade.promenadeapp.domain.Park.Park;
+import com.promenade.promenadeapp.dto.ParkFilterDto;
 import com.promenade.promenadeapp.dto.ParkNearInterface;
 import com.promenade.promenadeapp.dto.ResponseDto;
 import com.promenade.promenadeapp.service.Park.ParkService;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -42,4 +48,52 @@ public class ParkController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/filter")
+    public ResponseEntity<?> filtering(@RequestParam double lat, @RequestParam double lng,
+                                       @RequestBody ParkFilterDto filterDto) throws JsonProcessingException {
+        List<String> filters = parkService.filtering(filterDto);
+        // 하나도 필터링 체크 안하면 필터링 없이 주변에 있는 공원 조회
+        if (filters.isEmpty()) {
+            List<ParkNearInterface> nearParks = parkService.getNearParks(lat, lng);
+            ResponseDto<ParkNearInterface> response = ResponseDto.<ParkNearInterface>builder()
+                    .data(nearParks)
+                    .build();
+            return ResponseEntity.ok(response);
+        }
+
+        List<ParkNearInterface> parks = new ArrayList<>();
+        List<Long> parkIds = new ArrayList<>();
+        List<Long> duplicatedParkIds = new ArrayList<>();
+        for (String filter : filters) {
+            List<ParkNearInterface> filterParks = parkService.searchByFilters(lat, lng, filter);
+            if (parks.isEmpty()) {
+                parks.addAll(filterParks);
+                parkIds.addAll(parks.stream().map(p -> p.getId()).collect(Collectors.toList()));
+                System.out.println(filter + "옵션의 parkIds = " + parkIds);
+                continue;
+            }
+            for (ParkNearInterface iterPark : filterParks) {
+                if (parkIds.contains(iterPark.getId())) {
+                    duplicatedParkIds.add(iterPark.getId());
+                }
+            }
+            parkIds.clear();
+            parkIds.addAll(duplicatedParkIds);
+            duplicatedParkIds.clear();
+            System.out.println(filter + "옵션의 parkIds = " + parkIds);
+        }
+        List<ParkNearInterface> resultParks = parks.stream().filter(park -> parkIds.contains(park.getId())).collect(Collectors.toList());
+
+        if (resultParks.isEmpty()) {
+            ResponseDto response = ResponseDto.builder()
+                    .error("필터링에 맞는 공원이 없습니다.")
+                    .build();
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        ResponseDto<ParkNearInterface> response = ResponseDto.<ParkNearInterface>builder()
+                .data(resultParks)
+                .build();
+        return ResponseEntity.ok(response);
+    }
 }
