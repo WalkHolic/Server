@@ -2,10 +2,7 @@ package com.promenade.promenadeapp.controller;
 
 import com.promenade.promenadeapp.domain.User.User;
 import com.promenade.promenadeapp.domain.User.UserRoad;
-import com.promenade.promenadeapp.dto.ResponseDto;
-import com.promenade.promenadeapp.dto.TestRequestDto;
-import com.promenade.promenadeapp.dto.UserDto;
-import com.promenade.promenadeapp.dto.UserRoadRequestDto;
+import com.promenade.promenadeapp.dto.*;
 import com.promenade.promenadeapp.security.TokenProvider;
 import com.promenade.promenadeapp.service.User.UserRoadService;
 import com.promenade.promenadeapp.service.User.UserService;
@@ -20,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -48,9 +46,10 @@ public class TestController {
                     .user(foundUserByGoogleId) // user 추가
                     .build();
             List<UserRoad> userRoads = userRoadService.saveUserRoad(userRoad);
+            List<UserRoadResponseDto> responseDtos = userRoads.stream().map(UserRoadResponseDto::new).collect(Collectors.toList());
 
-            ResponseDto<UserRoad> response = ResponseDto.<UserRoad>builder()
-                    .data(userRoads)
+            ResponseDto<UserRoadResponseDto> response = ResponseDto.<UserRoadResponseDto>builder()
+                    .data(responseDtos)
                     .build();
             return ResponseEntity.ok(response);
         } catch (Exception e) {

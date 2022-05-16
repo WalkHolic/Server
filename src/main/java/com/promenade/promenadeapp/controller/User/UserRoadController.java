@@ -71,7 +71,7 @@ public class UserRoadController {
         }
     }
 
-    @DeleteMapping("/id/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUserRoad(@AuthenticationPrincipal String googleId,
                                             @PathVariable Long id) {
         try {

@@ -23,7 +23,7 @@ public class RoadController {
         return roadService.getAllRoads();
     }
 
-    @GetMapping("/id/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ResponseDto<Road>> findById(@PathVariable Long id) {
         Road road = roadService.findById(id);
         ResponseDto<Road> response = ResponseDto.<Road>builder()
