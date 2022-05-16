@@ -4,6 +4,7 @@ import com.promenade.promenadeapp.domain.User.User;
 import com.promenade.promenadeapp.domain.User.UserRoad;
 import com.promenade.promenadeapp.domain.User.UserRoadPath;
 import com.promenade.promenadeapp.dto.ResponseDto;
+import com.promenade.promenadeapp.dto.UserRoadPathResponse;
 import com.promenade.promenadeapp.dto.UserRoadRequestDto;
 import com.promenade.promenadeapp.dto.UserRoadResponseDto;
 import com.promenade.promenadeapp.service.User.UserRoadPathService;
@@ -67,6 +68,11 @@ public class UserRoadController {
 
             // request 정보에 따라 UserRoadPath 엔티티에 저장하기 (trailPoints o)
             List<List<Double>> points = requestDto.getTrailPoints();
+            if (points == null) {
+                userRoadService.deleteUserRoad(savedUserRoad);
+                ResponseDto response = ResponseDto.builder().error("산책로 경로 정보(points)가 없습니다.").build();
+                return ResponseEntity.badRequest().body(response);
+            }
             for (List<Double> point : points) {
                 log.info("lat, lng = " + point.toString());
                 UserRoadPath tmpUserRoadPath = UserRoadPath.builder()
@@ -118,6 +124,24 @@ public class UserRoadController {
             ResponseDto response = ResponseDto.builder().error(e.getMessage()).build();
             return ResponseEntity.badRequest().body(response);
         }
+    }
+
+    @GetMapping("/{id}/paths")
+    public ResponseEntity<?> findByUserRoadId(@AuthenticationPrincipal String googleId,
+                                                       @PathVariable Long id) {
+        List<UserRoad> foundUserRoads = userRoadService.findByUserGoogleId(googleId);
+        List<Long> roadIds = foundUserRoads.stream().map(road -> road.getId()).collect(Collectors.toList());
+
+        if (!roadIds.contains(id)) {
+            ResponseDto response = ResponseDto.builder().error("접근 가능한 산책로가 아닙니다. id=" + id).build();
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        ResponseDto<UserRoadPathResponse> response = ResponseDto.<UserRoadPathResponse>builder()
+                .data(userRoadPathService.findByUserRoadId(id))
+                .build();
+        return ResponseEntity.ok(response);
+
     }
 
 }

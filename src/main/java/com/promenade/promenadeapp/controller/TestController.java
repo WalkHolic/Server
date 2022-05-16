@@ -54,6 +54,11 @@ public class TestController {
 
             // request 정보에 따라 UserRoadPath 엔티티에 저장하기 (trailPoints o)
             List<List<Double>> points = requestDto.getTrailPoints();
+            if (points == null) {
+                userRoadService.deleteUserRoad(savedUserRoad);
+                ResponseDto response = ResponseDto.builder().error("산책로 경로 정보(points)가 없습니다.").build();
+                return ResponseEntity.badRequest().body(response);
+            }
             for (List<Double> point : points) {
                 UserRoadPath tmpUserRoadPath = UserRoadPath.builder()
                         .lat(point.get(0))
