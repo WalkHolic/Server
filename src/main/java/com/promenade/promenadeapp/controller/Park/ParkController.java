@@ -24,7 +24,7 @@ public class ParkController {
 
     private final ParkService parkService;
 
-    @GetMapping("/id/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         Park park = parkService.findById(id);
         ResponseDto<Park> response = ResponseDto.<Park>builder()
