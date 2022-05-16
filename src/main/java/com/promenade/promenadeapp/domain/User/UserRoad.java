@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -29,22 +31,19 @@ public class UserRoad extends BaseTimeEntity {
     @Column(name = "start_addr")
     private String startAddr;
 
-    @Column(name = "trail_point")
-    private String trailPoint;
-
     @ManyToOne // RoadPath.road (단방향)
     @JoinColumn(name = "user_id")
     private User user;
 
     @Builder
-    public UserRoad(Long id, String userGoogleId, String trailName, String description, double distance, String startAddr, String trailPoint, User user) {
+    public UserRoad(Long id, String userGoogleId, String trailName, String description, double distance, String startAddr, User user) {
         this.id = id;
         this.userGoogleId = userGoogleId;
         this.trailName = trailName;
         this.description = description;
         this.distance = distance;
         this.startAddr = startAddr;
-        this.trailPoint = trailPoint;
         this.user = user;
     }
+
 }

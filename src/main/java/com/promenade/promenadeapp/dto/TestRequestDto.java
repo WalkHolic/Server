@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
 public class TestRequestDto {
@@ -14,17 +16,6 @@ public class TestRequestDto {
     private String description;
     private double distance;
     private String startAddr;
-    private String trailPoint;
-
-    @Builder
-    public TestRequestDto(Long userId, String googleId, String trailName, String description, double distance, String startAddr, String trailPoint) {
-        this.userId = userId;
-        this.googleId = googleId;
-        this.trailName = trailName;
-        this.description = description;
-        this.distance = distance;
-        this.startAddr = startAddr;
-        this.trailPoint = trailPoint;
-    }
+    private List<List<Double>> trailPoints;
 
 }

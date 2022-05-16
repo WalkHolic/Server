@@ -1,9 +1,13 @@
 package com.promenade.promenadeapp.dto;
 
 import com.promenade.promenadeapp.domain.User.UserRoad;
+import com.promenade.promenadeapp.domain.User.UserRoadPath;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -17,7 +21,6 @@ public class UserRoadResponseDto {
     private String description;
     private double distance;
     private String startAddr;
-    private String trailPoint;
 
     public UserRoadResponseDto(UserRoad userRoad) {
         this.id = userRoad.getId();
@@ -27,6 +30,5 @@ public class UserRoadResponseDto {
         this.description = userRoad.getDescription();
         this.distance = userRoad.getDistance();
         this.startAddr = userRoad.getStartAddr();
-        this.trailPoint = userRoad.getTrailPoint();
     }
 }
