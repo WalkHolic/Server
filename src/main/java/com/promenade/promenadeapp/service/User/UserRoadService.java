@@ -26,15 +26,13 @@ public class UserRoadService {
         }
     }
 
-    public List<UserRoad> saveUserRoad(UserRoad userRoad) {
+    public UserRoad saveUserRoad(UserRoad userRoad) {
         validate(userRoad);
 
-        userRoadRepository.save(userRoad);
-        log.info("UserRoad Id: {} is saved.", userRoad.getId());
-        return userRoadRepository.findByUserId(userRoad.getUser().getId());
+        return userRoadRepository.save(userRoad);
     }
 
-    public List<UserRoad> getUserRoads(String userGoogleId) {
+    public List<UserRoad> findByUserGoogleId(String userGoogleId) {
         return userRoadRepository.findByUserGoogleId(userGoogleId);
     }
 
@@ -42,6 +40,7 @@ public class UserRoadService {
         return userRoadRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 UserRoad가 없습니다. id = " + id));
     }
+
 
     public List<UserRoad> deleteUserRoad(UserRoad userRoad) {
         validate(userRoad);
