@@ -5,6 +5,7 @@ import com.promenade.promenadeapp.domain.Road.RoadReview;
 import com.promenade.promenadeapp.domain.User.User;
 import com.promenade.promenadeapp.dto.ResponseDto;
 import com.promenade.promenadeapp.dto.Road.RoadReviewRequestDto;
+import com.promenade.promenadeapp.dto.Road.RoadReviewResponseDto;
 import com.promenade.promenadeapp.service.Road.RoadReviewService;
 import com.promenade.promenadeapp.service.Road.RoadService;
 import com.promenade.promenadeapp.service.User.UserService;
@@ -14,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -29,9 +31,9 @@ public class RoadReviewController {
     @GetMapping("/{roadId}")
     public ResponseEntity<?> findByRoadId(@PathVariable Long roadId) {
         List<RoadReview> roadReviews = roadReviewService.findByRoadId(roadId);
-
-        ResponseDto response = ResponseDto.<RoadReview>builder()
-                .data(roadReviews)
+        List<RoadReviewResponseDto> responseDtos = roadReviews.stream().map(RoadReviewResponseDto::new).collect(Collectors.toList());
+        ResponseDto response = ResponseDto.<RoadReviewResponseDto>builder()
+                .data(responseDtos)
                 .build();
         return ResponseEntity.ok(response);
     }
