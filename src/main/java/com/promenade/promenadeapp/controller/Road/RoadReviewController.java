@@ -73,4 +73,30 @@ public class RoadReviewController {
             return ResponseEntity.badRequest().body(response);
         }
     }
+
+    @DeleteMapping("/review/{id}")
+    public ResponseEntity<?> deleteReview(@AuthenticationPrincipal String googleId,
+                                          @PathVariable Long id) {
+        try {
+
+            User userByGoogleId = userService.findByGoogleId(googleId);
+            RoadReview reviewById = roadReviewService.findById(id);
+
+            if (userByGoogleId.getId() != reviewById.getUser().getId()) {
+                ResponseDto response = ResponseDto.builder()
+                        .error("요청한 산책로리뷰 id가 당신의 리뷰가 아닙니다. id = " + id)
+                        .build();
+                return ResponseEntity.badRequest().body(response);
+            }
+            roadReviewService.delete(id);
+            log.info("요청된 산책로 리뷰가 삭제되었습니다. id=" + id);
+
+            return findByRoadId(reviewById.getRoad().getId());
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder()
+                    .error(e.getMessage())
+                    .build();
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
 }

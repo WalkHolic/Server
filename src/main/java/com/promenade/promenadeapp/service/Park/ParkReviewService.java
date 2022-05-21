@@ -27,9 +27,7 @@ public class ParkReviewService {
     }
 
     public void delete(Long id) {
-        ParkReview parkReview = parkReviewRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 리뷰가 없습니다. id=" + id));
-        parkReviewRepository.delete(parkReview);
+        parkReviewRepository.delete(findById(id));
     }
 
 }

@@ -13,11 +13,20 @@ public class RoadReviewService {
 
     private final RoadReviewRepository roadReviewRepository;
 
+    public RoadReview findById(Long id) {
+        return roadReviewRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 리뷰가 없습니다. id=" + id));
+    }
+
     public List<RoadReview> findByRoadId(Long roadId) {
         return roadReviewRepository.findByRoadId(roadId);
     }
 
     public RoadReview save(RoadReview roadReview) {
         return roadReviewRepository.save(roadReview);
+    }
+
+    public void delete(Long id) {
+        roadReviewRepository.delete(findById(id));
     }
 }

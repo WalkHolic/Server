@@ -88,6 +88,7 @@ public class ParkReviewController {
                 return ResponseEntity.badRequest().body(response);
             }
             parkReviewService.delete(id);
+            log.info("요청된 공원 리뷰가 삭제되었습니다. id=" + id);
 
             return findByParkId(reviewById.getPark().getId());
         } catch (Exception e) {
