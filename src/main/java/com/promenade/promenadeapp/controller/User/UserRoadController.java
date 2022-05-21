@@ -5,6 +5,10 @@ import com.promenade.promenadeapp.domain.User.UserRoad;
 import com.promenade.promenadeapp.domain.User.UserRoadHashtag;
 import com.promenade.promenadeapp.domain.User.UserRoadPath;
 import com.promenade.promenadeapp.dto.*;
+import com.promenade.promenadeapp.dto.User.UserRoadNearInterface;
+import com.promenade.promenadeapp.dto.User.UserRoadPathResponse;
+import com.promenade.promenadeapp.dto.User.UserRoadRequestDto;
+import com.promenade.promenadeapp.dto.User.UserRoadResponseDto;
 import com.promenade.promenadeapp.service.User.UserRoadHashtagService;
 import com.promenade.promenadeapp.service.User.UserRoadPathService;
 import com.promenade.promenadeapp.service.User.UserRoadService;
@@ -15,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -196,8 +199,37 @@ public class UserRoadController {
                     .build();
             return ResponseEntity.badRequest().body(response);
         }
-        ResponseDto response = ResponseDto.<UserRoadNearInterface>builder()
-                .data(nearRoads)
+
+        List<UserRoadResponseDto> responseDtos = userRoadHashtagService.addHashtagRoadsWithD(nearRoads);
+        ResponseDto response = ResponseDto.<UserRoadResponseDto>builder()
+                .data(responseDtos)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/hashtag")
+    public ResponseEntity<?> findByHashtag(@RequestParam String keyword) {
+        List<UserRoadHashtag> byHashtag = userRoadHashtagService.findByHashtag(keyword);
+        if (byHashtag.isEmpty()) {
+            ResponseDto response = ResponseDto.builder()
+                    .error("해시태그에 맞는 산책로가 하나도 없습니다. 해당 해시태그 = " + keyword)
+                    .build();
+            return ResponseEntity.badRequest().body(response);
+        }
+        List<UserRoad> userRoadsByHashtag = byHashtag.stream().map(entity -> entity.getUserRoad()).collect(Collectors.toList());
+
+        // shared인 사용자 산책로만 필터링
+        List<UserRoad> userRoads = userRoadsByHashtag.stream().filter(road -> road.isShared() == true).collect(Collectors.toList());
+        if (userRoads.isEmpty()) {
+            ResponseDto response = ResponseDto.builder()
+                    .error("공유된 산책로가 없습니다. 해당 해시태그 = " + keyword)
+                    .build();
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        List<UserRoadResponseDto> responseDtos = userRoadHashtagService.addHashtagRoads(userRoads);
+        ResponseDto response = ResponseDto.<UserRoadResponseDto>builder()
+                .data(responseDtos)
                 .build();
         return ResponseEntity.ok(response);
     }

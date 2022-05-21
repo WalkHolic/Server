@@ -2,10 +2,9 @@ package com.promenade.promenadeapp.controller.Road;
 
 import com.promenade.promenadeapp.domain.Road.RoadPath;
 import com.promenade.promenadeapp.dto.ResponseDto;
-import com.promenade.promenadeapp.dto.RoadPathResponseDto;
+import com.promenade.promenadeapp.dto.Road.RoadPathResponseDto;
 import com.promenade.promenadeapp.service.Road.RoadPathService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/roadPath")
+@RequestMapping("/road/path")
 public class RoadPathController {
 
     private final RoadPathService roadPathService;

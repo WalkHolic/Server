@@ -1,4 +1,4 @@
-package com.promenade.promenadeapp.dto;
+package com.promenade.promenadeapp.dto.Road;
 
 public interface RoadNearInterface {
 

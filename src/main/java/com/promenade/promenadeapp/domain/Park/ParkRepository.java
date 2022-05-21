@@ -1,6 +1,6 @@
 package com.promenade.promenadeapp.domain.Park;
 
-import com.promenade.promenadeapp.dto.ParkNearInterface;
+import com.promenade.promenadeapp.dto.Park.ParkNearInterface;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

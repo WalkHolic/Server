@@ -7,4 +7,6 @@ import java.util.List;
 public interface UserRoadHashtagRepository extends JpaRepository<UserRoadHashtag, Long> {
 
     List<UserRoadHashtag> findByUserRoadId(Long roadId);
+
+    List<UserRoadHashtag> findByHashtag(String hashtag);
 }

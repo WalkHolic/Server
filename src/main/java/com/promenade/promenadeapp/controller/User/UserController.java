@@ -2,7 +2,7 @@ package com.promenade.promenadeapp.controller.User;
 
 import com.promenade.promenadeapp.domain.User.User;
 import com.promenade.promenadeapp.dto.ResponseDto;
-import com.promenade.promenadeapp.dto.UserDto;
+import com.promenade.promenadeapp.dto.User.UserDto;
 import com.promenade.promenadeapp.security.TokenProvider;
 import com.promenade.promenadeapp.service.User.UserService;
 import lombok.RequiredArgsConstructor;

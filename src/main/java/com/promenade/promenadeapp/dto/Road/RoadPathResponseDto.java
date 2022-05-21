@@ -1,4 +1,4 @@
-package com.promenade.promenadeapp.dto;
+package com.promenade.promenadeapp.dto.Road;
 
 import com.promenade.promenadeapp.domain.Road.RoadPath;
 import lombok.AllArgsConstructor;

@@ -2,19 +2,17 @@ package com.promenade.promenadeapp.controller.Park;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.promenade.promenadeapp.domain.Park.Park;
-import com.promenade.promenadeapp.dto.ParkFilterDto;
-import com.promenade.promenadeapp.dto.ParkNearInterface;
+import com.promenade.promenadeapp.dto.Park.ParkFilterDto;
+import com.promenade.promenadeapp.dto.Park.ParkNearInterface;
 import com.promenade.promenadeapp.dto.ResponseDto;
 import com.promenade.promenadeapp.service.Park.ParkService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor

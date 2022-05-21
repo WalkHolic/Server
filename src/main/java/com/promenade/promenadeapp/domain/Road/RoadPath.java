@@ -11,6 +11,7 @@ import javax.persistence.*;
 public class RoadPath {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private int seq;

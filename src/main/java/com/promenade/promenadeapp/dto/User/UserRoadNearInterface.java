@@ -1,6 +1,4 @@
-package com.promenade.promenadeapp.dto;
-
-import java.time.LocalDateTime;
+package com.promenade.promenadeapp.dto.User;
 
 public interface UserRoadNearInterface {
 
@@ -15,6 +13,10 @@ public interface UserRoadNearInterface {
     String getDescription();
 
     double getDistance(); // 산책로 총 길이
+
+    String getPicture();
+
+    String getStart_addr();
 
     double getStart_lat();
 

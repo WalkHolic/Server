@@ -1,4 +1,4 @@
-package com.promenade.promenadeapp.dto;
+package com.promenade.promenadeapp.dto.Park;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
