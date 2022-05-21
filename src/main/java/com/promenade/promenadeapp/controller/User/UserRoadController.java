@@ -153,8 +153,10 @@ public class UserRoadController {
                                                        @PathVariable Long id) {
         List<UserRoad> foundUserRoads = userRoadService.findByUserGoogleId(googleId);
         List<Long> roadIds = foundUserRoads.stream().map(road -> road.getId()).collect(Collectors.toList());
+        UserRoad foundUserRoad = userRoadService.findById(id);
 
-        if (!roadIds.contains(id)) {
+        // 공유된 산책로가 아니거나, 로그인한 사용자 산책로가 아니면 잘못된 접근 처리
+        if ((foundUserRoad.isShared() == false) && !roadIds.contains(id)) {
             ResponseDto response = ResponseDto.builder().error("접근 가능한 산책로가 아닙니다. id=" + id).build();
             return ResponseEntity.badRequest().body(response);
         }

@@ -1,5 +1,6 @@
 package com.promenade.promenadeapp.service.User;
 
+import com.promenade.promenadeapp.domain.Road.RoadPath;
 import com.promenade.promenadeapp.domain.User.UserRoadPath;
 import com.promenade.promenadeapp.domain.User.UserRoadPathRepository;
 import com.promenade.promenadeapp.dto.UserRoadPathResponse;
@@ -23,4 +24,5 @@ public class UserRoadPathService {
     public List<UserRoadPathResponse> findByUserRoadId(Long userRoadId) {
         return userRoadPathRepository.findByUserRoadId(userRoadId);
     }
+
 }

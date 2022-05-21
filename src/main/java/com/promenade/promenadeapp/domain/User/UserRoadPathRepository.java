@@ -8,4 +8,6 @@ import java.util.List;
 public interface UserRoadPathRepository extends JpaRepository<UserRoadPath, Long> {
 
     List<UserRoadPathResponse> findByUserRoadId(Long userRoadId);
+
+
 }
