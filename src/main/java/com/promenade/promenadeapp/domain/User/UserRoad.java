@@ -2,6 +2,7 @@ package com.promenade.promenadeapp.domain.User;
 
 import com.promenade.promenadeapp.config.BooleanToYNConverter;
 import com.promenade.promenadeapp.domain.BaseTimeEntity;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,9 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Builder
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 public class UserRoad extends BaseTimeEntity {
@@ -35,6 +38,8 @@ public class UserRoad extends BaseTimeEntity {
     @Column(name = "start_lng")
     private double startLng;
 
+    private String picture;
+
     @Column(name = "is_shared")
     @Convert(converter = BooleanToYNConverter.class)
     private boolean isShared;
@@ -43,18 +48,6 @@ public class UserRoad extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Builder
-    public UserRoad(Long id, String trailName, String description, double distance, String startAddr, double startLat, double startLng, boolean isShared, User user) {
-        this.id = id;
-        this.trailName = trailName;
-        this.description = description;
-        this.distance = distance;
-        this.startAddr = startAddr;
-        this.startLat = startLat;
-        this.startLng = startLng;
-        this.isShared = isShared;
-        this.user = user;
-    }
 
     public UserRoad shareUserRoad(boolean isShared) {
         this.isShared = isShared;

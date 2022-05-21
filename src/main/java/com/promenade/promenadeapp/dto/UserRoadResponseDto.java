@@ -22,6 +22,7 @@ public class UserRoadResponseDto {
     private double distance;
     private String startAddr;
     private boolean isShared;
+    private String picture;
     private List<String> hashtag;
 
 }

@@ -196,10 +196,28 @@ public class UserRoadController {
                     .build();
             return ResponseEntity.badRequest().body(response);
         }
-        ResponseDto response = ResponseDto.<UserRoadNearInterface>builder()
-                .data(nearRoads)
+
+        List<UserRoadResponseDto> responseDtos = userRoadHashtagService.addHashtagRoadsWithD(nearRoads);
+        ResponseDto response = ResponseDto.<UserRoadResponseDto>builder()
+                .data(responseDtos)
                 .build();
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/hashtag")
+    public ResponseEntity<?> findByHashtag(@RequestParam String keyword) {
+        List<UserRoadHashtag> byHashtag = userRoadHashtagService.findByHashtag(keyword);
+        List<UserRoad> userRoadsByHastag = byHashtag.stream().map(entity -> entity.getUserRoad()).collect(Collectors.toList());
+
+        // shared인 사용자 산책로만 필터링
+        List<UserRoad> userRoads = userRoadsByHastag.stream().filter(road -> road.isShared() == true).collect(Collectors.toList());
+
+        List<UserRoadResponseDto> responseDtos = userRoadHashtagService.addHashtagRoads(userRoads);
+        ResponseDto response = ResponseDto.<UserRoadResponseDto>builder()
+                .data(responseDtos)
+                .build();
+        return ResponseEntity.ok(response);
+
     }
 
 }
