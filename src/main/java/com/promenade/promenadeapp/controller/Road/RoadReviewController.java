@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/road/review")
+@RequestMapping("/road")
 public class RoadReviewController {
 
     private final RoadReviewService roadReviewService;
@@ -30,9 +30,9 @@ public class RoadReviewController {
 
     private final RoadService roadService;
 
-    @GetMapping("/{roadId}")
-    public ResponseEntity<?> findByRoadId(@PathVariable Long roadId) {
-        List<RoadReview> roadReviews = roadReviewService.findByRoadId(roadId);
+    @GetMapping("/{id}/review")
+    public ResponseEntity<?> findByRoadId(@PathVariable Long id) {
+        List<RoadReview> roadReviews = roadReviewService.findByRoadId(id);
         if (roadReviews.isEmpty()) {
             ResponseDto response = ResponseDto.builder()
                     .error("해당 산책로의 리뷰가 없습니다.")
@@ -46,23 +46,31 @@ public class RoadReviewController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{roadId}")
+    @PostMapping("/{id}/review")
     public ResponseEntity postReview(@AuthenticationPrincipal String googleId,
-                                     @PathVariable Long roadId, @RequestBody RoadReviewRequestDto requestDto) {
-        User userByGoogleId = userService.findByGoogleId(googleId);
-        Road roadById = roadService.findById(roadId);
+                                     @PathVariable Long id, @RequestBody RoadReviewRequestDto requestDto) {
+        try {
 
-        RoadReview roadReview = RoadReview.builder()
-                .id(null) // save하면서 자동 저장
-                .score(requestDto.getScore())
-                .content(requestDto.getContent())
-                .pngPath(requestDto.getPng_path())
-                .user(userByGoogleId)
-                .road(roadById)
-                .build();
-        Long reviewId = roadReviewService.save(roadReview);
-        log.info("review saved. id="+reviewId);
+            User userByGoogleId = userService.findByGoogleId(googleId);
+            Road roadById = roadService.findById(id);
 
-        return findByRoadId(roadId);
+            RoadReview roadReview = RoadReview.builder()
+                    .id(null) // save하면서 자동 저장
+                    .score(requestDto.getScore())
+                    .content(requestDto.getContent())
+                    .pngPath(requestDto.getPng_path())
+                    .user(userByGoogleId)
+                    .road(roadById)
+                    .build();
+            RoadReview savedReview = roadReviewService.save(roadReview);
+            log.info("review saved. id=" + savedReview.getId());
+
+            return findByRoadId(id);
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder()
+                    .error(e.getMessage())
+                    .build();
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 }

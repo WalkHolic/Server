@@ -17,7 +17,7 @@ public class RoadReviewService {
         return roadReviewRepository.findByRoadId(roadId);
     }
 
-    public Long save(RoadReview roadReview) {
-        return roadReviewRepository.save(roadReview).getId();
+    public RoadReview save(RoadReview roadReview) {
+        return roadReviewRepository.save(roadReview);
     }
 }
