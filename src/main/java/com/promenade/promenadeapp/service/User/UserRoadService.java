@@ -2,15 +2,12 @@ package com.promenade.promenadeapp.service.User;
 
 import com.promenade.promenadeapp.domain.User.UserRoad;
 import com.promenade.promenadeapp.domain.User.UserRoadRepository;
-import com.promenade.promenadeapp.dto.UserRoadNearInterface;
-import com.promenade.promenadeapp.dto.UserRoadResponseDto;
+import com.promenade.promenadeapp.dto.User.UserRoadNearInterface;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor

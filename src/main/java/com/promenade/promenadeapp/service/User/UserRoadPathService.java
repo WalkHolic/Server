@@ -1,9 +1,8 @@
 package com.promenade.promenadeapp.service.User;
 
-import com.promenade.promenadeapp.domain.Road.RoadPath;
 import com.promenade.promenadeapp.domain.User.UserRoadPath;
 import com.promenade.promenadeapp.domain.User.UserRoadPathRepository;
-import com.promenade.promenadeapp.dto.UserRoadPathResponse;
+import com.promenade.promenadeapp.dto.User.UserRoadPathResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

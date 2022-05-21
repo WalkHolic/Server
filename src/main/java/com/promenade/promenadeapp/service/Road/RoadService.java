@@ -2,7 +2,7 @@ package com.promenade.promenadeapp.service.Road;
 
 import com.promenade.promenadeapp.domain.Road.Road;
 import com.promenade.promenadeapp.domain.Road.RoadRepository;
-import com.promenade.promenadeapp.dto.RoadNearInterface;
+import com.promenade.promenadeapp.dto.Road.RoadNearInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

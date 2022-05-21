@@ -1,4 +1,4 @@
-package com.promenade.promenadeapp.dto;
+package com.promenade.promenadeapp.dto.User;
 
 import com.promenade.promenadeapp.domain.User.UserRoad;
 import com.promenade.promenadeapp.domain.User.UserRoadHashtag;

@@ -4,7 +4,7 @@
 //import com.promenade.promenadeapp.domain.User.User;
 //import com.promenade.promenadeapp.domain.User.UserRoad;
 //import com.promenade.promenadeapp.domain.User.UserRoadRepository;
-//import com.promenade.promenadeapp.dto.UserRoadRequestDto;
+//import com.promenade.promenadeapp.dto.User.UserRoadRequestDto;
 //import com.promenade.promenadeapp.service.User.UserRoadService;
 //import com.promenade.promenadeapp.service.User.UserService;
 //import org.junit.jupiter.api.AfterEach;

@@ -1,6 +1,6 @@
 package com.promenade.promenadeapp.domain.Road;
 
-import com.promenade.promenadeapp.dto.RoadNearInterface;
+import com.promenade.promenadeapp.dto.Road.RoadNearInterface;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

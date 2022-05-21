@@ -5,6 +5,8 @@ import com.promenade.promenadeapp.domain.User.UserRoad;
 import com.promenade.promenadeapp.domain.User.UserRoadHashtag;
 import com.promenade.promenadeapp.domain.User.UserRoadPath;
 import com.promenade.promenadeapp.dto.*;
+import com.promenade.promenadeapp.dto.User.UserDto;
+import com.promenade.promenadeapp.dto.User.UserRoadResponseDto;
 import com.promenade.promenadeapp.security.TokenProvider;
 import com.promenade.promenadeapp.service.User.UserRoadHashtagService;
 import com.promenade.promenadeapp.service.User.UserRoadPathService;
@@ -20,9 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor

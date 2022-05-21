@@ -5,13 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.promenade.promenadeapp.domain.Park.Park;
 import com.promenade.promenadeapp.domain.Park.ParkRepository;
-import com.promenade.promenadeapp.dto.ParkFilterDto;
-import com.promenade.promenadeapp.dto.ParkNearInterface;
+import com.promenade.promenadeapp.dto.Park.ParkFilterDto;
+import com.promenade.promenadeapp.dto.Park.ParkNearInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.io.*;
 
 @RequiredArgsConstructor
 @Service
