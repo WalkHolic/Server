@@ -2,10 +2,12 @@ package com.promenade.promenadeapp.service.User;
 
 import com.promenade.promenadeapp.domain.User.UserRoad;
 import com.promenade.promenadeapp.domain.User.UserRoadRepository;
+import com.promenade.promenadeapp.dto.UserRoadResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -20,7 +22,7 @@ public class UserRoadService {
             log.warn("UserRoadRequestDto cannot be null.");
             throw new RuntimeException("UserRoadRequestDto cannot be null.");
         }
-        if (userRoad.getUserGoogleId() == null) {
+        if (userRoad.getUser() == null) {
             log.warn("Unknown user.");
             throw new RuntimeException("Unknown user.");
         }
@@ -30,6 +32,10 @@ public class UserRoadService {
         validate(userRoad);
 
         return userRoadRepository.save(userRoad);
+    }
+
+    public List<UserRoad> findByUserId(Long userId) {
+        return userRoadRepository.findByUserId(userId);
     }
 
     public List<UserRoad> findByUserGoogleId(String userGoogleId) {
@@ -53,7 +59,7 @@ public class UserRoadService {
             log.error("error deleting UserRoad ", userRoad.getId(), e);
             throw new RuntimeException("error deleting UserRoad " + userRoad.getId());
         }
-        return userRoadRepository.findByUserGoogleId(userRoad.getUserGoogleId());
+        return userRoadRepository.findByUserId(userRoad.getUser().getId());
     }
 
 }

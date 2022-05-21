@@ -18,9 +18,6 @@ public class UserRoad extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_google_id")
-    private String userGoogleId;
-
     @Column(name = "trail_name", unique = true)
     private String trailName;
 
@@ -36,9 +33,8 @@ public class UserRoad extends BaseTimeEntity {
     private User user;
 
     @Builder
-    public UserRoad(Long id, String userGoogleId, String trailName, String description, double distance, String startAddr, User user) {
+    public UserRoad(Long id, String trailName, String description, double distance, String startAddr, User user) {
         this.id = id;
-        this.userGoogleId = userGoogleId;
         this.trailName = trailName;
         this.description = description;
         this.distance = distance;

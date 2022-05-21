@@ -98,6 +98,11 @@ public class UserService {
     }
     /* end */
 
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다. id = " + id));
+    }
+
     public User findByGoogleId(String googleId) {
         return userRepository.findByGoogleId(googleId);
     }

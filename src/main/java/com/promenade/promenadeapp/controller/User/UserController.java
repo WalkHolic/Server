@@ -115,13 +115,17 @@ public class UserController {
         if (user != null) {
             String token = tokenProvider.createToken(user);
             UserDto responseUserDto = UserDto.builder()
+                    .id(user.getId())
                     .googleId(user.getGoogleId())
                     .email(user.getEmail())
                     .name(user.getName())
                     .picture(user.getPicture())
                     .token(token)
                     .build();
-            return ResponseEntity.ok().body(responseUserDto);
+            ResponseDto response = ResponseDto.<UserDto>builder()
+                    .data(Arrays.asList(responseUserDto))
+                    .build();
+            return ResponseEntity.ok().body(response);
         } else {
             ResponseDto responseDto = ResponseDto.builder()
                     .error("Login failed")

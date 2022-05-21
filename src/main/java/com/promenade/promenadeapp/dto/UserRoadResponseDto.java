@@ -1,6 +1,7 @@
 package com.promenade.promenadeapp.dto;
 
 import com.promenade.promenadeapp.domain.User.UserRoad;
+import com.promenade.promenadeapp.domain.User.UserRoadHashtag;
 import com.promenade.promenadeapp.domain.User.UserRoadPath;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,16 +17,15 @@ public class UserRoadResponseDto {
 
     private Long id;
     private Long userId;
-    private String userGoogleId;
     private String trailName;
     private String description;
     private double distance;
     private String startAddr;
+    private List<String> hashtag;
 
     public UserRoadResponseDto(UserRoad userRoad) {
         this.id = userRoad.getId();
         this.userId = userRoad.getUser().getId();
-        this.userGoogleId = userRoad.getUserGoogleId();
         this.trailName = userRoad.getTrailName();
         this.description = userRoad.getDescription();
         this.distance = userRoad.getDistance();

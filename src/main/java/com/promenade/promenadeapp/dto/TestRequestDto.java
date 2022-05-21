@@ -17,5 +17,6 @@ public class TestRequestDto {
     private double distance;
     private String startAddr;
     private List<List<Double>> trailPoints;
+    private List<String> hashtag;
 
 }

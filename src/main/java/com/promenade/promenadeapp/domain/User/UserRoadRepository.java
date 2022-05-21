@@ -8,4 +8,6 @@ public interface UserRoadRepository extends JpaRepository<UserRoad, Long> {
 
     List<UserRoad> findByUserGoogleId(String googleId);
 
+    List<UserRoad> findByUserId(Long userId);
+
 }
