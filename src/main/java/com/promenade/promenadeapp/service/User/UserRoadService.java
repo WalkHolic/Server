@@ -2,6 +2,7 @@ package com.promenade.promenadeapp.service.User;
 
 import com.promenade.promenadeapp.domain.User.UserRoad;
 import com.promenade.promenadeapp.domain.User.UserRoadRepository;
+import com.promenade.promenadeapp.dto.UserRoadNearInterface;
 import com.promenade.promenadeapp.dto.UserRoadResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -69,6 +70,10 @@ public class UserRoadService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 UserRoad가 없습니다. id = " + id));
 
         return userRoadRepository.save(userRoad);
+    }
+
+    public List<UserRoadNearInterface> findNearUserRoads(double lat, double lng) {
+        return userRoadRepository.findNearUserRoads(lat, lng);
     }
 
 }

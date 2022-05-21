@@ -52,6 +52,8 @@ public class TestController {
                     .description(requestDto.getDescription())
                     .distance(requestDto.getDistance())
                     .startAddr(requestDto.getStartAddr())
+                    .startLat(requestDto.getTrailPoints().get(0).get(0))
+                    .startLng(requestDto.getTrailPoints().get(0).get(1))
                     .user(foundUser) // user 추가
                     .build();
             UserRoad savedUserRoad = userRoadService.saveUserRoad(userRoad);

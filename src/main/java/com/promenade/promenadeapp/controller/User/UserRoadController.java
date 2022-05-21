@@ -4,10 +4,7 @@ import com.promenade.promenadeapp.domain.User.User;
 import com.promenade.promenadeapp.domain.User.UserRoad;
 import com.promenade.promenadeapp.domain.User.UserRoadHashtag;
 import com.promenade.promenadeapp.domain.User.UserRoadPath;
-import com.promenade.promenadeapp.dto.ResponseDto;
-import com.promenade.promenadeapp.dto.UserRoadPathResponse;
-import com.promenade.promenadeapp.dto.UserRoadRequestDto;
-import com.promenade.promenadeapp.dto.UserRoadResponseDto;
+import com.promenade.promenadeapp.dto.*;
 import com.promenade.promenadeapp.service.User.UserRoadHashtagService;
 import com.promenade.promenadeapp.service.User.UserRoadPathService;
 import com.promenade.promenadeapp.service.User.UserRoadService;
@@ -68,6 +65,8 @@ public class UserRoadController {
                     .description(requestDto.getDescription())
                     .distance(requestDto.getDistance())
                     .startAddr(requestDto.getStartAddr())
+                    .startLat(requestDto.getTrailPoints().get(0).get(0))
+                    .startLng(requestDto.getTrailPoints().get(0).get(1))
                     .user(foundUserByGoogleId) // user 추가
                     .build();
             UserRoad savedUserRoad = userRoadService.saveUserRoad(userRoad);
@@ -184,6 +183,21 @@ public class UserRoadController {
                 .data(Arrays.asList("shared changed. " + "shared: " + userRoad.isShared()))
                 .build();
         return ResponseEntity.ok(response);
-
     }
+
+    @GetMapping("/nearRoads")
+    public ResponseEntity<?> getNearRoads(@RequestParam double lat, @RequestParam double lng) {
+        List<UserRoadNearInterface> nearRoads = userRoadService.findNearUserRoads(lat, lng);
+        if (nearRoads.isEmpty()) {
+            ResponseDto response = ResponseDto.builder()
+                    .error("주변에 공유된 사용자 산책로가 없습니다.")
+                    .build();
+            return ResponseEntity.badRequest().body(response);
+        }
+        ResponseDto response = ResponseDto.<UserRoadNearInterface>builder()
+                .data(nearRoads)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
 }

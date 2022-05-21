@@ -29,6 +29,13 @@ public class UserRoad extends BaseTimeEntity {
     @Column(name = "start_addr")
     private String startAddr;
 
+    @Column(name = "start_lat")
+    private double startLat;
+
+    @Column(name = "start_lng")
+    private double startLng;
+
+    @Column(name = "is_shared")
     @Convert(converter = BooleanToYNConverter.class)
     private boolean isShared;
 
@@ -37,12 +44,14 @@ public class UserRoad extends BaseTimeEntity {
     private User user;
 
     @Builder
-    public UserRoad(Long id, String trailName, String description, double distance, String startAddr, boolean isShared, User user) {
+    public UserRoad(Long id, String trailName, String description, double distance, String startAddr, double startLat, double startLng, boolean isShared, User user) {
         this.id = id;
         this.trailName = trailName;
         this.description = description;
         this.distance = distance;
         this.startAddr = startAddr;
+        this.startLat = startLat;
+        this.startLng = startLng;
         this.isShared = isShared;
         this.user = user;
     }
