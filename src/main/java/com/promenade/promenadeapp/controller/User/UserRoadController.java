@@ -2,11 +2,10 @@ package com.promenade.promenadeapp.controller.User;
 
 import com.promenade.promenadeapp.domain.User.User;
 import com.promenade.promenadeapp.domain.User.UserRoad;
+import com.promenade.promenadeapp.domain.User.UserRoadHashtag;
 import com.promenade.promenadeapp.domain.User.UserRoadPath;
-import com.promenade.promenadeapp.dto.ResponseDto;
-import com.promenade.promenadeapp.dto.UserRoadPathResponse;
-import com.promenade.promenadeapp.dto.UserRoadRequestDto;
-import com.promenade.promenadeapp.dto.UserRoadResponseDto;
+import com.promenade.promenadeapp.dto.*;
+import com.promenade.promenadeapp.service.User.UserRoadHashtagService;
 import com.promenade.promenadeapp.service.User.UserRoadPathService;
 import com.promenade.promenadeapp.service.User.UserRoadService;
 import com.promenade.promenadeapp.service.User.UserService;
@@ -16,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,8 @@ public class UserRoadController {
 
     private final UserRoadPathService userRoadPathService;
 
+    private final UserRoadHashtagService userRoadHashtagService;
+
     @GetMapping
     public ResponseEntity<?> getUserRoads(@AuthenticationPrincipal String googleId) {
         List<UserRoad> userRoads = userRoadService.findByUserGoogleId(googleId);
@@ -40,7 +43,8 @@ public class UserRoadController {
                     .build();
             return ResponseEntity.badRequest().body(response);
         }
-        List<UserRoadResponseDto> responseDtos = userRoads.stream().map(UserRoadResponseDto::new).collect(Collectors.toList());
+        // UserRoad에 Hashtag 추가해서 응답해주기
+        List<UserRoadResponseDto> responseDtos = userRoadHashtagService.addHashtagRoads(userRoads);
         ResponseDto<UserRoadResponseDto> response = ResponseDto.<UserRoadResponseDto>builder()
                 .data(responseDtos)
                 .build();
@@ -54,19 +58,20 @@ public class UserRoadController {
         try {
             User foundUserByGoogleId = userService.findByGoogleId(googleId);
 
-            // request 정보에 따라 UserRoad 엔티티에 저장하기 (trailPoints x)
+            // 1. request 정보에 따라 UserRoad 엔티티에 저장하기 (trailPoints x)
             UserRoad userRoad = UserRoad.builder()
                     .id(null) // saveUserRoad()에서 자동 추가
-                    .userGoogleId(googleId) // googleId 추가
                     .trailName(requestDto.getTrailName())
                     .description(requestDto.getDescription())
                     .distance(requestDto.getDistance())
                     .startAddr(requestDto.getStartAddr())
+                    .startLat(requestDto.getTrailPoints().get(0).get(0))
+                    .startLng(requestDto.getTrailPoints().get(0).get(1))
                     .user(foundUserByGoogleId) // user 추가
                     .build();
             UserRoad savedUserRoad = userRoadService.saveUserRoad(userRoad);
 
-            // request 정보에 따라 UserRoadPath 엔티티에 저장하기 (trailPoints o)
+            // 2. request 정보에 따라 UserRoadPath 엔티티에 저장하기 (trailPoints o)
             List<List<Double>> points = requestDto.getTrailPoints();
             if (points == null) {
                 userRoadService.deleteUserRoad(savedUserRoad);
@@ -74,19 +79,35 @@ public class UserRoadController {
                 return ResponseEntity.badRequest().body(response);
             }
             for (List<Double> point : points) {
-                log.info("lat, lng = " + point.toString());
+                log.debug("lat, lng = " + point.toString());
                 UserRoadPath tmpUserRoadPath = UserRoadPath.builder()
                         .lat(point.get(0))
                         .lng(point.get(1))
                         .userRoad(savedUserRoad)
                         .build();
                 Long pathId = userRoadPathService.save(tmpUserRoadPath);// id 자동 추가
-                log.info("UserRoadPath is saved. id = {}", pathId);
+                log.debug("UserRoadPath is saved. id = {}", pathId);
+            }
+
+            // 3. request 정보에 따라 UserRoadHashTag 엔티티에 저장하기
+            List<String> hashtags = requestDto.getHashtag();
+            System.out.println(hashtags);
+            if (hashtags != null && !hashtags.isEmpty()) {
+                for (String hashtag : hashtags) {
+                    UserRoadHashtag userRoadHashtag = UserRoadHashtag.builder()
+                            .userRoad(userRoad)
+                            .hashtag(hashtag)
+                            .build();
+                    Long hashtagId = userRoadHashtagService.save(userRoadHashtag);
+                    log.debug("Hashtag is saved. id = " + hashtagId + ". hashtag = " + hashtag);
+                }
             }
 
             // 사용자의 모든 산책로 응답 (userRoadPath 제외. path는 새로 요청 했을 시에만)
-            List<UserRoad> userRoads = userRoadService.findByUserGoogleId(googleId);
-            List<UserRoadResponseDto> responseDtos = userRoads.stream().map(UserRoadResponseDto::new).collect(Collectors.toList());
+            List<UserRoad> userRoads = userRoadService.findByUserGoogleId(googleId); // 인증된 사용자의 산책로 리스트
+
+            // UserRoad에 Hashtag 추가해서 응답해주기
+            List<UserRoadResponseDto> responseDtos = userRoadHashtagService.addHashtagRoads(userRoads);
             ResponseDto<UserRoadResponseDto> response = ResponseDto.<UserRoadResponseDto>builder()
                     .data(responseDtos)
                     .build();
@@ -113,7 +134,8 @@ public class UserRoadController {
 
             List<UserRoad> userRoads = userRoadService.deleteUserRoad(userRoad);
 
-            List<UserRoadResponseDto> responseDtos = userRoads.stream().map(UserRoadResponseDto::new).collect(Collectors.toList());
+            List<UserRoadResponseDto> responseDtos = userRoadHashtagService.addHashtagRoads(userRoads);
+
             ResponseDto<UserRoadResponseDto> response = ResponseDto.<UserRoadResponseDto>builder()
                     .data(responseDtos)
                     .build();
@@ -131,8 +153,10 @@ public class UserRoadController {
                                                        @PathVariable Long id) {
         List<UserRoad> foundUserRoads = userRoadService.findByUserGoogleId(googleId);
         List<Long> roadIds = foundUserRoads.stream().map(road -> road.getId()).collect(Collectors.toList());
+        UserRoad foundUserRoad = userRoadService.findById(id);
 
-        if (!roadIds.contains(id)) {
+        // 공유된 산책로가 아니거나, 로그인한 사용자 산책로가 아니면 잘못된 접근 처리
+        if ((foundUserRoad.isShared() == false) && !roadIds.contains(id)) {
             ResponseDto response = ResponseDto.builder().error("접근 가능한 산책로가 아닙니다. id=" + id).build();
             return ResponseEntity.badRequest().body(response);
         }
@@ -142,6 +166,40 @@ public class UserRoadController {
                 .build();
         return ResponseEntity.ok(response);
 
+    }
+
+    @GetMapping("/{id}/share")
+    public ResponseEntity<?> shareUserRoad(@AuthenticationPrincipal String googleId,
+                                           @PathVariable Long id) {
+        List<UserRoad> foundUserRoads = userRoadService.findByUserGoogleId(googleId);
+        List<Long> roadIds = foundUserRoads.stream().map(road -> road.getId()).collect(Collectors.toList());
+
+        if (!roadIds.contains(id)) {
+            ResponseDto response = ResponseDto.builder().error("접근 가능한 산책로가 아닙니다. id=" + id).build();
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        UserRoad userRoad = userRoadService.updateShared(id);
+
+        ResponseDto response = ResponseDto.builder()
+                .data(Arrays.asList("shared changed. " + "shared: " + userRoad.isShared()))
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/nearRoads")
+    public ResponseEntity<?> getNearRoads(@RequestParam double lat, @RequestParam double lng) {
+        List<UserRoadNearInterface> nearRoads = userRoadService.findNearUserRoads(lat, lng);
+        if (nearRoads.isEmpty()) {
+            ResponseDto response = ResponseDto.builder()
+                    .error("주변에 공유된 사용자 산책로가 없습니다.")
+                    .build();
+            return ResponseEntity.badRequest().body(response);
+        }
+        ResponseDto response = ResponseDto.<UserRoadNearInterface>builder()
+                .data(nearRoads)
+                .build();
+        return ResponseEntity.ok(response);
     }
 
 }

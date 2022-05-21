@@ -12,15 +12,13 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @Entity
-public class UserRoadPath {
+public class UserRoadHashtag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private double lat;
-
-    private double lng;
+    private String hashtag;
 
     @ManyToOne // RoadPath.road (단방향)
     @JoinColumn(name = "user_road_id")
