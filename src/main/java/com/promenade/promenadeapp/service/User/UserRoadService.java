@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -60,6 +61,14 @@ public class UserRoadService {
             throw new RuntimeException("error deleting UserRoad " + userRoad.getId());
         }
         return userRoadRepository.findByUserId(userRoad.getUser().getId());
+    }
+
+    public UserRoad updateShared(Long id) {
+        UserRoad userRoad = userRoadRepository.findById(id)
+                .map(e -> e.shareUserRoad(!e.isShared()))
+                .orElseThrow(() -> new IllegalArgumentException("해당 UserRoad가 없습니다. id = " + id));
+
+        return userRoadRepository.save(userRoad);
     }
 
 }

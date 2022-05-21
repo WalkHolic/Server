@@ -21,14 +21,7 @@ public class UserRoadResponseDto {
     private String description;
     private double distance;
     private String startAddr;
+    private boolean isShared;
     private List<String> hashtag;
 
-    public UserRoadResponseDto(UserRoad userRoad) {
-        this.id = userRoad.getId();
-        this.userId = userRoad.getUser().getId();
-        this.trailName = userRoad.getTrailName();
-        this.description = userRoad.getDescription();
-        this.distance = userRoad.getDistance();
-        this.startAddr = userRoad.getStartAddr();
-    }
 }

@@ -32,23 +32,6 @@ public class UserRoadHashtagService {
         return result;
     }
 
-    public UserRoadResponseDto addHashtagRoad(UserRoad userRoad) {
-        // UserRoad + UserRoadHashTag 포함하여 응답해주기
-        Long roadId = userRoad.getId();
-        List<String> hashtagsByRoadId = findHashtagsByRoadId(roadId);
-        UserRoadResponseDto userRoadResponseDto = UserRoadResponseDto.builder()
-                .id(userRoad.getId())
-                .userId(userRoad.getUser().getId())
-                .trailName(userRoad.getTrailName())
-                .description(userRoad.getDescription())
-                .distance(userRoad.getDistance())
-                .startAddr(userRoad.getStartAddr())
-                .hashtag(hashtagsByRoadId)
-                .build();
-
-        return userRoadResponseDto;
-    }
-
     public List<UserRoadResponseDto> addHashtagRoads(List<UserRoad> userRoads) {
         // UserRoad + UserRoadHashTag 포함하여 응답해주기
         List<UserRoadResponseDto> responseDtos = new ArrayList<>();
@@ -62,6 +45,7 @@ public class UserRoadHashtagService {
                     .description(tmpUserRoad.getDescription())
                     .distance(tmpUserRoad.getDistance())
                     .startAddr(tmpUserRoad.getStartAddr())
+                    .isShared(tmpUserRoad.isShared())
                     .hashtag(hashtagsByRoadId)
                     .build();
             responseDtos.add(userRoadResponseDto);

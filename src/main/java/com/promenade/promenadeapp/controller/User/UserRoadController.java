@@ -19,6 +19,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -166,4 +167,23 @@ public class UserRoadController {
 
     }
 
+    @GetMapping("/{id}/share")
+    public ResponseEntity<?> shareUserRoad(@AuthenticationPrincipal String googleId,
+                                           @PathVariable Long id) {
+        List<UserRoad> foundUserRoads = userRoadService.findByUserGoogleId(googleId);
+        List<Long> roadIds = foundUserRoads.stream().map(road -> road.getId()).collect(Collectors.toList());
+
+        if (!roadIds.contains(id)) {
+            ResponseDto response = ResponseDto.builder().error("접근 가능한 산책로가 아닙니다. id=" + id).build();
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        UserRoad userRoad = userRoadService.updateShared(id);
+
+        ResponseDto response = ResponseDto.builder()
+                .data(Arrays.asList("shared changed. " + "shared: " + userRoad.isShared()))
+                .build();
+        return ResponseEntity.ok(response);
+
+    }
 }
