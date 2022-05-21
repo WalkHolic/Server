@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/park/review")
+@RequestMapping("/park")
 public class ParkReviewController {
 
     private final ParkReviewService parkReviewService;
@@ -30,9 +30,9 @@ public class ParkReviewController {
 
     private final ParkService parkService;
 
-    @GetMapping("/{parkId}")
-    public ResponseEntity<?> findByParkId(@PathVariable Long parkId) {
-        List<ParkReview> parkReviews = parkReviewService.findByParkId(parkId);
+    @GetMapping("/{id}/review")
+    public ResponseEntity<?> findByParkId(@PathVariable Long id) {
+        List<ParkReview> parkReviews = parkReviewService.findByParkId(id);
         if (parkReviews.isEmpty()) {
             ResponseDto response = ResponseDto.builder()
                     .error("해당 공원의 리뷰가 없습니다.")
@@ -46,23 +46,55 @@ public class ParkReviewController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{parkId}")
-    public ResponseEntity postReview(@AuthenticationPrincipal String googleId,
-                                     @PathVariable Long parkId, @RequestBody RoadReviewRequestDto requestDto) {
-        User userByGoogleId = userService.findByGoogleId(googleId);
-        Park parkById = parkService.findById(parkId);
+    @PostMapping("/{id}/review")
+    public ResponseEntity<?> postReview(@AuthenticationPrincipal String googleId,
+                                     @PathVariable Long id, @RequestBody RoadReviewRequestDto requestDto) {
+        try {
 
-        ParkReview parkReview = ParkReview.builder()
-                .id(null) // save하면서 자동 저장
-                .score(requestDto.getScore())
-                .content(requestDto.getContent())
-                .pngPath(requestDto.getPng_path())
-                .user(userByGoogleId)
-                .park(parkById)
-                .build();
-        Long reviewId = parkReviewService.save(parkReview);
-        log.info("review saved. id="+reviewId);
+            User userByGoogleId = userService.findByGoogleId(googleId);
+            Park parkById = parkService.findById(id);
 
-        return findByParkId(parkId);
+            ParkReview parkReview = ParkReview.builder()
+                    .id(null) // save하면서 자동 저장
+                    .score(requestDto.getScore())
+                    .content(requestDto.getContent())
+                    .pngPath(requestDto.getPng_path())
+                    .user(userByGoogleId)
+                    .park(parkById)
+                    .build();
+            Long reviewId = parkReviewService.save(parkReview);
+            log.info("review saved. id=" + reviewId);
+
+            return findByParkId(id);
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder()
+                    .error(e.getMessage())
+                    .build();
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @DeleteMapping("/review/{id}")
+    public ResponseEntity<?> deleteReview(@AuthenticationPrincipal String googleId,
+                                          @PathVariable Long id) {
+        try {
+            User userByGoogleId = userService.findByGoogleId(googleId);
+            ParkReview reviewById = parkReviewService.findById(id);
+
+            if (userByGoogleId.getId() != reviewById.getUser().getId()) {
+                ResponseDto response = ResponseDto.builder()
+                        .error("요청한 공원리뷰 id가 당신의 리뷰가 아닙니다. id = " + id)
+                        .build();
+                return ResponseEntity.badRequest().body(response);
+            }
+            parkReviewService.delete(id);
+
+            return findByParkId(reviewById.getPark().getId());
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder()
+                    .error(e.getMessage())
+                    .build();
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 }
