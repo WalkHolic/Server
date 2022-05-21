@@ -10,6 +10,7 @@ import com.promenade.promenadeapp.service.Road.RoadReviewService;
 import com.promenade.promenadeapp.service.Road.RoadService;
 import com.promenade.promenadeapp.service.User.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/road/review")
@@ -31,6 +33,12 @@ public class RoadReviewController {
     @GetMapping("/{roadId}")
     public ResponseEntity<?> findByRoadId(@PathVariable Long roadId) {
         List<RoadReview> roadReviews = roadReviewService.findByRoadId(roadId);
+        if (roadReviews.isEmpty()) {
+            ResponseDto response = ResponseDto.builder()
+                    .error("해당 산책로의 리뷰가 없습니다.")
+                    .build();
+            return ResponseEntity.badRequest().body(response);
+        }
         List<RoadReviewResponseDto> responseDtos = roadReviews.stream().map(RoadReviewResponseDto::new).collect(Collectors.toList());
         ResponseDto response = ResponseDto.<RoadReviewResponseDto>builder()
                 .data(responseDtos)
@@ -52,7 +60,8 @@ public class RoadReviewController {
                 .user(userByGoogleId)
                 .road(roadById)
                 .build();
-        roadReviewService.save(roadReview);
+        Long reviewId = roadReviewService.save(roadReview);
+        log.info("review saved. id="+reviewId);
 
         return findByRoadId(roadId);
     }
