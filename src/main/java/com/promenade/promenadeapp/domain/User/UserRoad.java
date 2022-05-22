@@ -10,7 +10,11 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Entity
-public class UserRoad extends BaseTimeEntity {
+public class
+
+
+
+  UserRoad extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
