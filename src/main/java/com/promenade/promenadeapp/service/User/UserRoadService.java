@@ -70,14 +70,14 @@ public class UserRoadService {
         return userRoadRepository.save(userRoad);
     }
 
-    public UserRoad update(Long id, UserRoadUpdateRequestDto requestDto) {
+    public UserRoad update(Long id, UserRoadUpdateRequestDto requestDto, String thumbnail) {
         UserRoad userRoad = userRoadRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 산책로가 없습니다. id=" + id));
         if (requestDto.getTrailName() == null || requestDto.getTrailName().isBlank()) {
             throw new IllegalArgumentException("산책로 이름은 필수입니다.");
         }
 
-        return userRoad.update(requestDto.getTrailName(), requestDto.getDescription(), requestDto.getPicture());
+        return userRoad.update(requestDto.getTrailName(), requestDto.getDescription(), thumbnail);
     }
 
     public List<UserRoadNearInterface> findNearUserRoads(double lat, double lng) {

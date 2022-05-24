@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
@@ -234,9 +235,9 @@ public class UserRoadController {
     @PutMapping("{id}")
     public ResponseEntity<?> updateUserRoad(@AuthenticationPrincipal String googleId,
                                             @PathVariable Long id,
-                                            @RequestBody UserRoadUpdateRequestDto requestDto) {
+                                            @RequestPart(required = false) MultipartFile thumbnail,
+                                            @RequestPart UserRoadUpdateRequestDto userRoadUpdateRequestDto) {
         try {
-
 
             User user = userService.findByGoogleId(googleId);
             List<UserRoad> foundUserRoads = userRoadService.findByUserGoogleId(googleId);
@@ -246,9 +247,10 @@ public class UserRoadController {
                 ResponseDto response = ResponseDto.builder().error("접근 가능한 산책로가 아닙니다. id=" + id).build();
                 return ResponseEntity.badRequest().body(response);
             }
+            log.info("fileName" + thumbnail.getOriginalFilename());
 
-            UserRoad updatedUserRoad = userRoadService.update(id, requestDto);
-            userRoadHashtagService.update(updatedUserRoad, requestDto.getHashtag());
+            UserRoad updatedUserRoad = userRoadService.update(id, userRoadUpdateRequestDto, thumbnail.getOriginalFilename());
+            userRoadHashtagService.update(updatedUserRoad, userRoadUpdateRequestDto.getHashtag());
 
             List<UserRoadResponseDto> userRoadResponseDtos = userRoadHashtagService.addHashtagRoads(foundUserRoads);
             ResponseDto response = ResponseDto.<UserRoadResponseDto>builder()

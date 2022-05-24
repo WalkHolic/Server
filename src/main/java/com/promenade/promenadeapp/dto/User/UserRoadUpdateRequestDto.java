@@ -11,7 +11,6 @@ public class UserRoadUpdateRequestDto {
 
     private String trailName;
     private String description;
-    private String picture;
     private List<String> hashtag;
 
 }
