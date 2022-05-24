@@ -2,14 +2,12 @@ package com.promenade.promenadeapp.dto.User;
 
 import com.promenade.promenadeapp.domain.User.User;
 import com.promenade.promenadeapp.domain.User.UserRoad;
-import com.promenade.promenadeapp.domain.User.UserRoadHashtag;
-import com.promenade.promenadeapp.domain.User.UserRoadPath;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -25,6 +23,8 @@ public class UserRoadResponseDto {
     private boolean isShared;
     private String picture;
     private List<String> hashtag;
+    private LocalDateTime createdDate;
+    private LocalDateTime modifiedDate;
 
     public UserRoadResponseDto(User user, UserRoad userRoad, List<String> hashtags) {
         this.id = userRoad.getId();
@@ -36,6 +36,8 @@ public class UserRoadResponseDto {
         this.isShared = userRoad.isShared();
         this.picture = userRoad.getPicture();
         this.hashtag = hashtags;
+        this.createdDate = userRoad.getCreatedDate();
+        this.modifiedDate = userRoad.getModifiedDate();
     }
 
 }

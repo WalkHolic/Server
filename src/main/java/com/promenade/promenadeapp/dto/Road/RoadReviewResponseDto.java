@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 @AllArgsConstructor
@@ -17,6 +19,8 @@ public class RoadReviewResponseDto {
     private double score;
     private String content;
     private String pngPath;
+    private LocalDateTime createdDate;
+    private LocalDateTime modifiedDate;
 
     public RoadReviewResponseDto(RoadReview roadReview) {
         this.id = roadReview.getId();
@@ -26,5 +30,7 @@ public class RoadReviewResponseDto {
         this.score = roadReview.getScore();
         this.content = roadReview.getContent();
         this.pngPath = roadReview.getPngPath();
+        this.createdDate = roadReview.getCreatedDate();
+        this.modifiedDate = roadReview.getModifiedDate();
     }
 }
