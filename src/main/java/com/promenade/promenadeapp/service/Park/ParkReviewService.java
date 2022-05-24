@@ -2,6 +2,7 @@ package com.promenade.promenadeapp.service.Park;
 
 import com.promenade.promenadeapp.domain.Park.ParkReview;
 import com.promenade.promenadeapp.domain.Park.ParkReviewRepository;
+import com.promenade.promenadeapp.dto.ReviewRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -34,4 +35,9 @@ public class ParkReviewService {
         return parkReviewRepository.findByUserId(userId);
     }
 
+    public Long update(Long id, ReviewRequestDto reviewRequestDto, String pictureUrl) {
+        ParkReview parkReview = parkReviewRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 리뷰가 없습니다. id=" + id));
+        return parkReview.update(reviewRequestDto, pictureUrl).getId();
+    }
 }

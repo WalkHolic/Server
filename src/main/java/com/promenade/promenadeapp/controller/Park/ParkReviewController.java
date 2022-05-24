@@ -3,9 +3,11 @@ package com.promenade.promenadeapp.controller.Park;
 import com.promenade.promenadeapp.domain.Park.Park;
 import com.promenade.promenadeapp.domain.Park.ParkReview;
 import com.promenade.promenadeapp.domain.User.User;
+import com.promenade.promenadeapp.domain.User.UserRoad;
 import com.promenade.promenadeapp.dto.Park.ParkReviewResponseDto;
 import com.promenade.promenadeapp.dto.ResponseDto;
 import com.promenade.promenadeapp.dto.ReviewRequestDto;
+import com.promenade.promenadeapp.dto.User.UserRoadUpdateRequestDto;
 import com.promenade.promenadeapp.service.Park.ParkReviewService;
 import com.promenade.promenadeapp.service.Park.ParkService;
 import com.promenade.promenadeapp.service.Road.StorageService;
@@ -112,6 +114,44 @@ public class ParkReviewController {
             ResponseDto response = ResponseDto.builder()
                     .error(e.getMessage())
                     .build();
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @PutMapping("/review/{id}")
+    public ResponseEntity<?> updateReview(@AuthenticationPrincipal String googleId,
+                                          @PathVariable Long id,
+                                          @RequestPart(required = false) MultipartFile thumbnail,
+                                          @RequestPart ReviewRequestDto reviewRequestDto) {
+        try {
+
+            User foundUser = userService.findByGoogleId(googleId);
+            ParkReview foundParkReview = parkReviewService.findById(id);
+
+            if (foundUser.getId() != foundParkReview.getUser().getId()) {
+                ResponseDto response = ResponseDto.builder()
+                        .error("접근 가능한 공원 리뷰가 아닙니다.")
+                        .build();
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // 사진 파일 있을때만 s3 접근해서 업로드 처리
+            String pictureUrl = null;
+            if (!(thumbnail == null || thumbnail.isEmpty())) {
+                pictureUrl = storageService.uploadFile(thumbnail);
+            }
+            Long updatedId = parkReviewService.update(id, reviewRequestDto, pictureUrl);
+            log.info("공원 리뷰 업데이트 완료. id=" + updatedId);
+
+            List<ParkReview> parkReviews = parkReviewService.findByUserId(foundUser.getId());
+            List<ParkReviewResponseDto> responseDtos = parkReviews.stream().map(ParkReviewResponseDto::new).collect(Collectors.toList());
+            ResponseDto response = ResponseDto.<ParkReviewResponseDto>builder()
+                    .data(responseDtos)
+                    .build();
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder().error(e.getMessage()).build();
             return ResponseEntity.badRequest().body(response);
         }
     }
