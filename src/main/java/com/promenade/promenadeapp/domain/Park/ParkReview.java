@@ -36,10 +36,11 @@ public class ParkReview extends BaseTimeEntity {
     @JoinColumn(name = "park_id")
     private Park park;
 
-    public ParkReview update(ReviewRequestDto reviewRequestDto, String pictureUrl) {
-        this.score = reviewRequestDto.getScore();
-        this.content = reviewRequestDto.getContent();
-        this.pngPath = pictureUrl;
+    // 공원 리뷰 수정
+    public ParkReview update(double score, String content, String pngPath) {
+        this.score = score;
+        this.content = content;
+        this.pngPath = pngPath;
 
         return this;
     }

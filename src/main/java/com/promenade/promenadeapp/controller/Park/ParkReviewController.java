@@ -19,6 +19,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -140,8 +141,9 @@ public class ParkReviewController {
             if (!(thumbnail == null || thumbnail.isEmpty())) {
                 pictureUrl = storageService.uploadFile(thumbnail);
             }
-            Long updatedId = parkReviewService.update(id, reviewRequestDto, pictureUrl);
-            log.info("공원 리뷰 업데이트 완료. id=" + updatedId);
+            ParkReview updatedParkReview = parkReviewService.update(id, reviewRequestDto, pictureUrl);
+            Long savedId = parkReviewService.save(updatedParkReview); // 업데이트 후 저장해줘야 DB에 반영된다.
+            log.info("공원 리뷰 업데이트 완료. id=" + savedId);
 
             List<ParkReview> parkReviews = parkReviewService.findByUserId(foundUser.getId());
             List<ParkReviewResponseDto> responseDtos = parkReviews.stream().map(ParkReviewResponseDto::new).collect(Collectors.toList());

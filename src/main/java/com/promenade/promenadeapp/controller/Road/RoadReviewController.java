@@ -1,5 +1,6 @@
 package com.promenade.promenadeapp.controller.Road;
 
+import com.promenade.promenadeapp.domain.Park.ParkReview;
 import com.promenade.promenadeapp.domain.Road.Road;
 import com.promenade.promenadeapp.domain.Road.RoadReview;
 import com.promenade.promenadeapp.domain.User.User;
@@ -136,6 +137,46 @@ public class RoadReviewController {
             ResponseDto response = ResponseDto.builder()
                     .error(e.getMessage())
                     .build();
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @PutMapping("/review/{id}")
+    public ResponseEntity<?> updateReview(@AuthenticationPrincipal String googleId,
+                                          @PathVariable Long id,
+                                          @RequestPart(required = false) MultipartFile thumbnail,
+                                          @RequestPart ReviewRequestDto reviewRequestDto) {
+        try {
+
+            User foundUser = userService.findByGoogleId(googleId);
+            RoadReview foundRoadReview = roadReviewService.findById(id);
+
+            if (foundUser.getId() != foundRoadReview.getUser().getId()) {
+                ResponseDto response = ResponseDto.builder()
+                        .error("접근 가능한 산책로 리뷰가 아닙니다.")
+                        .build();
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // 사진 파일 있을때만 s3 접근해서 업로드 처리
+            String pictureUrl = null;
+            if (!(thumbnail == null || thumbnail.isEmpty())) {
+                pictureUrl = storageService.uploadFile(thumbnail);
+            }
+
+            RoadReview roadReview = roadReviewService.update(id, reviewRequestDto, pictureUrl);
+            RoadReview savedId = roadReviewService.save(roadReview); // 업데이트 후 저장해야만 DB에 반영이 됨.
+            log.info("산책로 리뷰 업데이트 완료. id=" + savedId);
+
+            List<RoadReview> roadReviews = roadReviewService.findByUserId(foundUser.getId());
+            List<RoadReviewResponseDto> responseDtos = roadReviews.stream().map(RoadReviewResponseDto::new).collect(Collectors.toList());
+            ResponseDto response = ResponseDto.<RoadReviewResponseDto>builder()
+                    .data(responseDtos)
+                    .build();
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder().error(e.getMessage()).build();
             return ResponseEntity.badRequest().body(response);
         }
     }

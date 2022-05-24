@@ -8,19 +8,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Builder
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class
-
-
-
-  UserRoad extends BaseTimeEntity {
+public class UserRoad extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

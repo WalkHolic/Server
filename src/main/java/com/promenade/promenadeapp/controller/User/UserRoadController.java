@@ -255,6 +255,7 @@ public class UserRoadController {
                 pictureUrl = storageService.uploadFile(thumbnail);
             }
             UserRoad updatedUserRoad = userRoadService.update(id, userRoadUpdateRequestDto, pictureUrl);
+            log.info("사용자 산책로 업데이트. id=" + updatedUserRoad.getId());
 
             userRoadHashtagService.update(updatedUserRoad, userRoadUpdateRequestDto.getHashtag());
 

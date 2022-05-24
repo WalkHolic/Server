@@ -2,6 +2,7 @@ package com.promenade.promenadeapp.service.Road;
 
 import com.promenade.promenadeapp.domain.Road.RoadReview;
 import com.promenade.promenadeapp.domain.Road.RoadReviewRepository;
+import com.promenade.promenadeapp.dto.ReviewRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,5 +33,11 @@ public class RoadReviewService {
 
     public List<RoadReview> findByUserId(Long userId) {
         return roadReviewRepository.findByUserId(userId);
+    }
+
+    public RoadReview update(Long id, ReviewRequestDto reviewRequestDto, String pictureUrl) {
+        RoadReview roadReview = roadReviewRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 리뷰가 없습니다. id=" + id));
+        return roadReview.update(reviewRequestDto, pictureUrl);
     }
 }

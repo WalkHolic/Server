@@ -35,9 +35,15 @@ public class ParkReviewService {
         return parkReviewRepository.findByUserId(userId);
     }
 
-    public Long update(Long id, ReviewRequestDto reviewRequestDto, String pictureUrl) {
+    public ParkReview update(Long id, ReviewRequestDto reviewRequestDto, String pictureUrl) {
         ParkReview parkReview = parkReviewRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 리뷰가 없습니다. id=" + id));
-        return parkReview.update(reviewRequestDto, pictureUrl).getId();
+        Double score = reviewRequestDto.getScore();
+        String content = reviewRequestDto.getContent();
+        if (score == null || score.isNaN() || content == null || content.isBlank()) {
+            throw new IllegalArgumentException("별점, 내용은 필수입니다.");
+        }
+
+        return parkReview.update(score, content, pictureUrl);
     }
 }
