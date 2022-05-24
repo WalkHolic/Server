@@ -2,6 +2,7 @@ package com.promenade.promenadeapp.domain.Road;
 
 import com.promenade.promenadeapp.domain.BaseTimeEntity;
 import com.promenade.promenadeapp.domain.User.User;
+import com.promenade.promenadeapp.dto.ReviewRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,5 +35,13 @@ public class RoadReview extends BaseTimeEntity {
     @ManyToOne // RoadPath.road (단방향)
     @JoinColumn(name = "road_id")
     private Road road;
+
+    public RoadReview update(ReviewRequestDto reviewRequestDto, String pictureUrl) {
+        this.score = reviewRequestDto.getScore();
+        this.content = reviewRequestDto.getContent();
+        this.pngPath = pictureUrl;
+
+        return this;
+    }
 
 }

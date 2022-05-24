@@ -8,4 +8,6 @@ public interface ParkReviewRepository extends JpaRepository<ParkReview, Long> {
 
     List<ParkReview> findByParkId(Long parkId);
 
+    List<ParkReview> findByUserId(Long userId);
+
 }

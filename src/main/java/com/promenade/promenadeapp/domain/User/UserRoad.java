@@ -8,19 +8,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Builder
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class
-
-
-
-  UserRoad extends BaseTimeEntity {
+public class UserRoad extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,9 +46,18 @@ public class
     @JoinColumn(name = "user_id")
     private User user;
 
-
+    // 공유 기능 활성 또는 비활성화
     public UserRoad shareUserRoad(boolean isShared) {
         this.isShared = isShared;
+
+        return this;
+    }
+
+    // 자신의 산책로 수정
+    public UserRoad update(String trailName, String description, String picture) {
+        this.trailName = trailName;
+        this.description = description;
+        this.picture = picture;
 
         return this;
     }

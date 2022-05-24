@@ -2,6 +2,7 @@ package com.promenade.promenadeapp.domain.Park;
 
 import com.promenade.promenadeapp.domain.BaseTimeEntity;
 import com.promenade.promenadeapp.domain.User.User;
+import com.promenade.promenadeapp.dto.ReviewRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,4 +35,13 @@ public class ParkReview extends BaseTimeEntity {
     @ManyToOne // 단방향
     @JoinColumn(name = "park_id")
     private Park park;
+
+    // 공원 리뷰 수정
+    public ParkReview update(double score, String content, String pngPath) {
+        this.score = score;
+        this.content = content;
+        this.pngPath = pngPath;
+
+        return this;
+    }
 }

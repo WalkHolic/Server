@@ -5,10 +5,8 @@ import com.promenade.promenadeapp.domain.User.UserRoad;
 import com.promenade.promenadeapp.domain.User.UserRoadHashtag;
 import com.promenade.promenadeapp.domain.User.UserRoadPath;
 import com.promenade.promenadeapp.dto.*;
-import com.promenade.promenadeapp.dto.User.UserRoadNearInterface;
-import com.promenade.promenadeapp.dto.User.UserRoadPathResponse;
-import com.promenade.promenadeapp.dto.User.UserRoadRequestDto;
-import com.promenade.promenadeapp.dto.User.UserRoadResponseDto;
+import com.promenade.promenadeapp.dto.User.*;
+import com.promenade.promenadeapp.service.Road.StorageService;
 import com.promenade.promenadeapp.service.User.UserRoadHashtagService;
 import com.promenade.promenadeapp.service.User.UserRoadPathService;
 import com.promenade.promenadeapp.service.User.UserRoadService;
@@ -18,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,6 +35,8 @@ public class UserRoadController {
     private final UserRoadPathService userRoadPathService;
 
     private final UserRoadHashtagService userRoadHashtagService;
+
+    private final StorageService storageService;
 
     @GetMapping
     public ResponseEntity<?> getUserRoads(@AuthenticationPrincipal String googleId) {
@@ -232,6 +233,44 @@ public class UserRoadController {
                 .data(responseDtos)
                 .build();
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<?> updateUserRoad(@AuthenticationPrincipal String googleId,
+                                            @PathVariable Long id,
+                                            @RequestPart(required = false) MultipartFile thumbnail,
+                                            @RequestPart UserRoadUpdateRequestDto userRoadUpdateRequestDto) {
+        try {
+            List<UserRoad> foundUserRoads = userRoadService.findByUserGoogleId(googleId);
+            List<Long> roadIds = foundUserRoads.stream().map(road -> road.getId()).collect(Collectors.toList());
+
+            if (!roadIds.contains(id)) {
+                ResponseDto response = ResponseDto.builder().error("접근 가능한 산책로가 아닙니다. id=" + id).build();
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // 사진 파일 있을때만 s3 접근해서 업로드 처리
+            String pictureUrl = null;
+            if (!(thumbnail == null || thumbnail.isEmpty())) {
+                pictureUrl = storageService.uploadFile(thumbnail);
+            }
+            UserRoad updatedUserRoad = userRoadService.update(id, userRoadUpdateRequestDto, pictureUrl);
+            log.info("사용자 산책로 업데이트. id=" + updatedUserRoad.getId());
+
+            userRoadHashtagService.update(updatedUserRoad, userRoadUpdateRequestDto.getHashtag());
+
+            List<UserRoadResponseDto> userRoadResponseDtos = userRoadHashtagService.addHashtagRoads(foundUserRoads);
+            ResponseDto response = ResponseDto.<UserRoadResponseDto>builder()
+                    .data(userRoadResponseDtos)
+                    .build();
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder()
+                    .error(e.getMessage())
+                    .build();
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 
 }

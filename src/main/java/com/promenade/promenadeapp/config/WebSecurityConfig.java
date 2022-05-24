@@ -29,11 +29,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                    .antMatchers("/auth/**", "/test/**", "/park/**", "/road/**", "/file/**", "/user/**").permitAll()
+                    .antMatchers("/auth/**", "/test/**").permitAll()
                 .anyRequest()
                     .authenticated();
 
-        http.addFilterAfter(
+        http.addFilterBefore(
                 jwtAuthenticationFilter,
                 CorsFilter.class
         );
