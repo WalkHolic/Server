@@ -48,6 +48,8 @@ public class UserRoadHashtagService {
                     .startAddr(tmpUserRoad.getStartAddr())
                     .picture(tmpUserRoad.getPicture())
                     .hashtag(hashtagsByRoadId)
+                    .createdDate(tmpUserRoad.getCreatedDate())
+                    .modifiedDate(tmpUserRoad.getModifiedDate())
                     .build();
             responseDtos.add(userRoadResponseDto);
         }
