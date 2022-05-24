@@ -117,4 +117,30 @@ public class UserRoadReviewController {
             return ResponseEntity.badRequest().body(response);
         }
     }
+
+    @DeleteMapping("/review/{id}")
+    public ResponseEntity<?> deleteReview(@AuthenticationPrincipal String googleId,
+                                          @PathVariable Long id) {
+        try {
+
+            User user = userService.findByGoogleId(googleId);
+            UserRoadReview userRoadReview = userRoadReviewService.findById(id);
+
+            if (user.getId() != userRoadReview.getUser().getId()) {
+                ResponseDto response = ResponseDto.builder()
+                        .error("요청한 공유 산책로 리뷰에 접근할 수 없습니다. id = " + id)
+                        .build();
+                return ResponseEntity.badRequest().body(response);
+            }
+            userRoadReviewService.delete(userRoadReview);
+            log.info("요청된 공유 산책로 리뷰가 삭제되었습니다. id=" + id);
+
+            return findByUserRoadId(userRoadReview.getUserRoad().getId());
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder()
+                    .error(e.getMessage())
+                    .build();
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
 }
