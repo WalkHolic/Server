@@ -6,6 +6,7 @@ import com.promenade.promenadeapp.domain.User.UserRoadHashtag;
 import com.promenade.promenadeapp.domain.User.UserRoadPath;
 import com.promenade.promenadeapp.dto.*;
 import com.promenade.promenadeapp.dto.User.*;
+import com.promenade.promenadeapp.service.Road.StorageService;
 import com.promenade.promenadeapp.service.User.UserRoadHashtagService;
 import com.promenade.promenadeapp.service.User.UserRoadPathService;
 import com.promenade.promenadeapp.service.User.UserRoadService;
@@ -34,6 +35,8 @@ public class UserRoadController {
     private final UserRoadPathService userRoadPathService;
 
     private final UserRoadHashtagService userRoadHashtagService;
+
+    private final StorageService storageService;
 
     @GetMapping
     public ResponseEntity<?> getUserRoads(@AuthenticationPrincipal String googleId) {
@@ -247,9 +250,9 @@ public class UserRoadController {
                 ResponseDto response = ResponseDto.builder().error("접근 가능한 산책로가 아닙니다. id=" + id).build();
                 return ResponseEntity.badRequest().body(response);
             }
-            log.info("fileName" + thumbnail.getOriginalFilename());
+            String pictureUrl = storageService.uploadFile(thumbnail);
 
-            UserRoad updatedUserRoad = userRoadService.update(id, userRoadUpdateRequestDto, thumbnail.getOriginalFilename());
+            UserRoad updatedUserRoad = userRoadService.update(id, userRoadUpdateRequestDto, pictureUrl);
             userRoadHashtagService.update(updatedUserRoad, userRoadUpdateRequestDto.getHashtag());
 
             List<UserRoadResponseDto> userRoadResponseDtos = userRoadHashtagService.addHashtagRoads(foundUserRoads);
