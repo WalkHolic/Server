@@ -1,6 +1,5 @@
 package com.promenade.promenadeapp.controller.User;
 
-import com.promenade.promenadeapp.domain.Road.Road;
 import com.promenade.promenadeapp.domain.Road.RoadReview;
 import com.promenade.promenadeapp.domain.User.User;
 import com.promenade.promenadeapp.domain.User.UserRoad;
@@ -190,6 +189,26 @@ public class UserRoadReviewController {
 
         } catch (Exception e) {
             ResponseDto response = ResponseDto.builder().error(e.getMessage()).build();
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @GetMapping("/user/review")
+    public ResponseEntity<?> getMyReviews(@AuthenticationPrincipal String googleId) {
+        try {
+            User user = userService.findByGoogleId(googleId);
+            List<UserRoadReview> userRoadReviews = userRoadReviewService.findByUserId(user.getId());
+            List<UserRoadReviewResponseDto> responseDtos = userRoadReviews.stream().map(UserRoadReviewResponseDto::new).collect(Collectors.toList());
+
+            ResponseDto response = ResponseDto.<UserRoadReviewResponseDto>builder()
+                    .data(responseDtos)
+                    .build();
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder()
+                    .error(e.getMessage())
+                    .build();
             return ResponseEntity.badRequest().body(response);
         }
     }
