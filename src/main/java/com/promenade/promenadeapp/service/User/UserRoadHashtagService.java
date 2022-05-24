@@ -52,16 +52,8 @@ public class UserRoadHashtagService {
         for (UserRoadNearInterface tmpUserRoad : userRoads) {
             Long roadId = tmpUserRoad.getId();
             List<String> hashtagsByRoadId = findHashtagsByRoadId(roadId);
-            UserRoadResponseDto userRoadResponseDto = UserRoadResponseDto.builder()
-                    .id(tmpUserRoad.getId())
-                    .userId(tmpUserRoad.getUserId())
-                    .trailName(tmpUserRoad.getTrail_name())
-                    .description(tmpUserRoad.getDescription())
-                    .distance(tmpUserRoad.getDistance())
-                    .startAddr(tmpUserRoad.getStart_addr())
-                    .picture(tmpUserRoad.getPicture())
-                    .hashtag(hashtagsByRoadId)
-                    .build();
+            UserRoadResponseDto userRoadResponseDto = new UserRoadResponseDto(tmpUserRoad, hashtagsByRoadId);
+
             responseDtos.add(userRoadResponseDto);
         }
         return responseDtos;
