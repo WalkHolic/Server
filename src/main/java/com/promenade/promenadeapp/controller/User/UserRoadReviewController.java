@@ -143,4 +143,54 @@ public class UserRoadReviewController {
             return ResponseEntity.badRequest().body(response);
         }
     }
+
+    @PutMapping("/review/{id}")
+    public ResponseEntity<?> updateReview(@AuthenticationPrincipal String googleId,
+                                          @PathVariable Long id,
+                                          @RequestPart(required = false) MultipartFile thumbnail,
+                                          @RequestPart ReviewRequestDto reviewRequestDto) {
+        try {
+
+            User user = userService.findByGoogleId(googleId);
+            UserRoadReview foundUserRoadReview = userRoadReviewService.findById(id);
+
+            if (user.getId() != foundUserRoadReview.getUser().getId()) {
+                ResponseDto response = ResponseDto.builder()
+                        .error("접근 가능한 공유 산책로 리뷰가 아닙니다. id=" + id)
+                        .build();
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // 공유되지 않은 산책로 접근 시, 에러 반환
+            UserRoad userRoad = userRoadService.findById(foundUserRoadReview.getUserRoad().getId());
+            if (!userRoad.isShared()) {
+                ResponseDto response = ResponseDto.builder()
+                        .error("공유되지 않은 산책로에 접근하였습니다. id=" + id)
+                        .build();
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // 사진 파일 있을때만 s3 접근해서 업로드 처리
+            String pictureUrl = null;
+            if (!(thumbnail == null || thumbnail.isEmpty())) {
+                pictureUrl = storageService.uploadFile(thumbnail);
+            }
+
+            UserRoadReview userRoadReview = userRoadReviewService.update(id, reviewRequestDto, pictureUrl);
+            UserRoadReview savedReview = userRoadReviewService.save(userRoadReview); // 업데이트 후 저장해야만 DB에 반영이 됨.
+            log.info("공유 산책로 리뷰 업데이트 완료. id=" + savedReview.getId());
+
+            List<UserRoadReview> userRoadReviews = userRoadReviewService.findByUserId(user.getId());
+            List<UserRoadReviewResponseDto> responseDtos = userRoadReviews.stream().map(UserRoadReviewResponseDto::new).collect(Collectors.toList());
+
+           ResponseDto response = ResponseDto.<UserRoadReviewResponseDto>builder()
+                    .data(responseDtos)
+                    .build();
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder().error(e.getMessage()).build();
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
 }
