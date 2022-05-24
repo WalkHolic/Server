@@ -8,12 +8,14 @@ import com.promenade.promenadeapp.dto.ReviewRequestDto;
 import com.promenade.promenadeapp.dto.Road.RoadReviewResponseDto;
 import com.promenade.promenadeapp.service.Road.RoadReviewService;
 import com.promenade.promenadeapp.service.Road.RoadService;
+import com.promenade.promenadeapp.service.Road.StorageService;
 import com.promenade.promenadeapp.service.User.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +31,8 @@ public class RoadReviewController {
     private final UserService userService;
 
     private final RoadService roadService;
+
+    private final StorageService storageService;
 
     @GetMapping("/{id}/review")
     public ResponseEntity<?> findByRoadId(@PathVariable Long id) {
@@ -48,24 +52,39 @@ public class RoadReviewController {
 
     @PostMapping("/{id}/review")
     public ResponseEntity postReview(@AuthenticationPrincipal String googleId,
-                                     @PathVariable Long id, @RequestBody ReviewRequestDto requestDto) {
+                                     @PathVariable Long id,
+                                     @RequestPart(required = false) MultipartFile thumbnail,
+                                     @RequestPart ReviewRequestDto reviewRequestDto) {
         try {
 
             User userByGoogleId = userService.findByGoogleId(googleId);
             Road roadById = roadService.findById(id);
 
+            // 사진 파일 있을때만 s3 접근해서 업로드 처리
+            String pictureUrl = null;
+            if (!(thumbnail == null || thumbnail.isEmpty())) {
+                pictureUrl = storageService.uploadFile(thumbnail);
+            }
+
             RoadReview roadReview = RoadReview.builder()
                     .id(null) // save하면서 자동 저장
-                    .score(requestDto.getScore())
-                    .content(requestDto.getContent())
-//                    .pngPath(requestDto.getPng_path())
+                    .score(reviewRequestDto.getScore())
+                    .content(reviewRequestDto.getContent())
+                    .pngPath(pictureUrl)
                     .user(userByGoogleId)
                     .road(roadById)
                     .build();
             RoadReview savedReview = roadReviewService.save(roadReview);
             log.info("review saved. id=" + savedReview.getId());
 
-            return findByRoadId(id);
+            List<RoadReview> roadReviews = roadReviewService.findByRoadId(id);
+            List<RoadReviewResponseDto> responseDtos = roadReviews.stream().map(RoadReviewResponseDto::new).collect(Collectors.toList());
+
+            ResponseDto response = ResponseDto.<RoadReviewResponseDto>builder()
+                    .data(responseDtos)
+                    .build();
+            return ResponseEntity.ok(response);
+
         } catch (Exception e) {
             ResponseDto response = ResponseDto.builder()
                     .error(e.getMessage())

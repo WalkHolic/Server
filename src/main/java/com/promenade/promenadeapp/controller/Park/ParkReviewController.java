@@ -3,7 +3,6 @@ package com.promenade.promenadeapp.controller.Park;
 import com.promenade.promenadeapp.domain.Park.Park;
 import com.promenade.promenadeapp.domain.Park.ParkReview;
 import com.promenade.promenadeapp.domain.User.User;
-import com.promenade.promenadeapp.domain.User.UserRoad;
 import com.promenade.promenadeapp.dto.Park.ParkReviewResponseDto;
 import com.promenade.promenadeapp.dto.ResponseDto;
 import com.promenade.promenadeapp.dto.ReviewRequestDto;
