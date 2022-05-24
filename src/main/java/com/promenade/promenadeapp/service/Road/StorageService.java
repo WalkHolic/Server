@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.util.IOUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,12 +28,16 @@ public class StorageService {
     @Autowired
     private AmazonS3 s3Client;
 
-    public String uploadFile(MultipartFile file) {
-        File fileObj = convertMultiPartFileToFile(file);
-        String fileName = "review/" + file.getOriginalFilename();
-        s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
-        fileObj.delete();
-        return "https://s3.ap-northeast-2.amazonaws.com/capstone.assets/"+fileName;
+    public String uploadFile(MultipartFile file) throws FileUploadException {
+        try {
+            File fileObj = convertMultiPartFileToFile(file);
+            String fileName = "review/" + file.getOriginalFilename();
+            s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
+            fileObj.delete();
+            return "https://s3.ap-northeast-2.amazonaws.com/capstone.assets/" + fileName;
+        } catch (Exception e) {
+            throw new FileUploadException();
+        }
     }
 
 

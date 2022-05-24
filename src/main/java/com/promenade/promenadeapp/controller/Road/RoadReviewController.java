@@ -4,7 +4,7 @@ import com.promenade.promenadeapp.domain.Road.Road;
 import com.promenade.promenadeapp.domain.Road.RoadReview;
 import com.promenade.promenadeapp.domain.User.User;
 import com.promenade.promenadeapp.dto.ResponseDto;
-import com.promenade.promenadeapp.dto.Road.RoadReviewRequestDto;
+import com.promenade.promenadeapp.dto.ReviewRequestDto;
 import com.promenade.promenadeapp.dto.Road.RoadReviewResponseDto;
 import com.promenade.promenadeapp.service.Road.RoadReviewService;
 import com.promenade.promenadeapp.service.Road.RoadService;
@@ -48,7 +48,7 @@ public class RoadReviewController {
 
     @PostMapping("/{id}/review")
     public ResponseEntity postReview(@AuthenticationPrincipal String googleId,
-                                     @PathVariable Long id, @RequestBody RoadReviewRequestDto requestDto) {
+                                     @PathVariable Long id, @RequestBody ReviewRequestDto requestDto) {
         try {
 
             User userByGoogleId = userService.findByGoogleId(googleId);
@@ -58,7 +58,7 @@ public class RoadReviewController {
                     .id(null) // save하면서 자동 저장
                     .score(requestDto.getScore())
                     .content(requestDto.getContent())
-                    .pngPath(requestDto.getPng_path())
+//                    .pngPath(requestDto.getPng_path())
                     .user(userByGoogleId)
                     .road(roadById)
                     .build();

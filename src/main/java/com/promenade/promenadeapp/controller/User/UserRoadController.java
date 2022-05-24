@@ -241,8 +241,6 @@ public class UserRoadController {
                                             @RequestPart(required = false) MultipartFile thumbnail,
                                             @RequestPart UserRoadUpdateRequestDto userRoadUpdateRequestDto) {
         try {
-
-            User user = userService.findByGoogleId(googleId);
             List<UserRoad> foundUserRoads = userRoadService.findByUserGoogleId(googleId);
             List<Long> roadIds = foundUserRoads.stream().map(road -> road.getId()).collect(Collectors.toList());
 
@@ -250,9 +248,14 @@ public class UserRoadController {
                 ResponseDto response = ResponseDto.builder().error("접근 가능한 산책로가 아닙니다. id=" + id).build();
                 return ResponseEntity.badRequest().body(response);
             }
-            String pictureUrl = storageService.uploadFile(thumbnail);
 
+            // 사진 파일 있을때만 s3 접근해서 업로드 처리
+            String pictureUrl = null;
+            if (!(thumbnail == null || thumbnail.isEmpty())) {
+                pictureUrl = storageService.uploadFile(thumbnail);
+            }
             UserRoad updatedUserRoad = userRoadService.update(id, userRoadUpdateRequestDto, pictureUrl);
+
             userRoadHashtagService.update(updatedUserRoad, userRoadUpdateRequestDto.getHashtag());
 
             List<UserRoadResponseDto> userRoadResponseDtos = userRoadHashtagService.addHashtagRoads(foundUserRoads);

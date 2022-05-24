@@ -1,6 +1,7 @@
 package com.promenade.promenadeapp.controller.Road;
 
 import com.promenade.promenadeapp.service.Road.StorageService;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,7 @@ public class StorageController {
     private StorageService service;
 
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam(value = "file") MultipartFile file) {
+    public ResponseEntity<String> uploadFile(@RequestParam(value = "file") MultipartFile file) throws FileUploadException {
         return new ResponseEntity<>(service.uploadFile(file), HttpStatus.OK);
     }
 
