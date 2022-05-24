@@ -30,4 +30,8 @@ public class ParkReviewService {
         parkReviewRepository.delete(findById(id));
     }
 
+    public List<ParkReview> findByUserId(Long userId) {
+        return parkReviewRepository.findByUserId(userId);
+    }
+
 }

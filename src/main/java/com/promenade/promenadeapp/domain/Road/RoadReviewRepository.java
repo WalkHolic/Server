@@ -7,4 +7,7 @@ import java.util.List;
 public interface RoadReviewRepository extends JpaRepository<RoadReview, Long> {
 
     List<RoadReview> findByRoadId(Long roadId);
+
+    List<RoadReview> findByUserId(Long userId);
+
 }

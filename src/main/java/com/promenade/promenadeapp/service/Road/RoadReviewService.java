@@ -29,4 +29,8 @@ public class RoadReviewService {
     public void delete(Long id) {
         roadReviewRepository.delete(findById(id));
     }
+
+    public List<RoadReview> findByUserId(Long userId) {
+        return roadReviewRepository.findByUserId(userId);
+    }
 }

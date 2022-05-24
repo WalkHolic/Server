@@ -115,4 +115,23 @@ public class ParkReviewController {
             return ResponseEntity.badRequest().body(response);
         }
     }
+
+    @GetMapping("/user/review")
+    public ResponseEntity<?> getMyReviews(@AuthenticationPrincipal String googleId) {
+        try {
+            User user = userService.findByGoogleId(googleId);
+            List<ParkReview> parkReviews = parkReviewService.findByUserId(user.getId());
+            List<ParkReviewResponseDto> responseDtos = parkReviews.stream().map(ParkReviewResponseDto::new).collect(Collectors.toList());
+
+            ResponseDto response = ResponseDto.<ParkReviewResponseDto>builder()
+                    .data(responseDtos)
+                    .build();
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder()
+                    .error(e.getMessage())
+                    .build();
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
 }

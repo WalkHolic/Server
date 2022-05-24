@@ -3,6 +3,7 @@ package com.promenade.promenadeapp.controller.Road;
 import com.promenade.promenadeapp.domain.Road.Road;
 import com.promenade.promenadeapp.domain.Road.RoadReview;
 import com.promenade.promenadeapp.domain.User.User;
+import com.promenade.promenadeapp.dto.Park.ParkReviewResponseDto;
 import com.promenade.promenadeapp.dto.ResponseDto;
 import com.promenade.promenadeapp.dto.ReviewRequestDto;
 import com.promenade.promenadeapp.dto.Road.RoadReviewResponseDto;
@@ -111,6 +112,26 @@ public class RoadReviewController {
             log.info("요청된 산책로 리뷰가 삭제되었습니다. id=" + id);
 
             return findByRoadId(reviewById.getRoad().getId());
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder()
+                    .error(e.getMessage())
+                    .build();
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @GetMapping("/user/review")
+    public ResponseEntity<?> getMyReviews(@AuthenticationPrincipal String googleId) {
+        try {
+            User user = userService.findByGoogleId(googleId);
+            List<RoadReview> roadReviews = roadReviewService.findByUserId(user.getId());
+            List<RoadReviewResponseDto> responseDtos = roadReviews.stream().map(RoadReviewResponseDto::new).collect(Collectors.toList());
+
+            ResponseDto response = ResponseDto.<RoadReviewResponseDto>builder()
+                    .data(responseDtos)
+                    .build();
+            return ResponseEntity.ok(response);
+
         } catch (Exception e) {
             ResponseDto response = ResponseDto.builder()
                     .error(e.getMessage())
