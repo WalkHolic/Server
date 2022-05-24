@@ -1,5 +1,6 @@
 package com.promenade.promenadeapp.dto.User;
 
+import com.promenade.promenadeapp.domain.User.User;
 import com.promenade.promenadeapp.domain.User.UserRoad;
 import com.promenade.promenadeapp.domain.User.UserRoadHashtag;
 import com.promenade.promenadeapp.domain.User.UserRoadPath;
@@ -24,5 +25,17 @@ public class UserRoadResponseDto {
     private boolean isShared;
     private String picture;
     private List<String> hashtag;
+
+    public UserRoadResponseDto(User user, UserRoad userRoad, List<String> hashtags) {
+        this.id = userRoad.getId();
+        this.userId = user.getId();
+        this.trailName = userRoad.getTrailName();
+        this.description = userRoad.getDescription();
+        this.distance = userRoad.getDistance();
+        this.startAddr = userRoad.getStartAddr();
+        this.isShared = userRoad.isShared();
+        this.picture = userRoad.getPicture();
+        this.hashtag = hashtags;
+    }
 
 }

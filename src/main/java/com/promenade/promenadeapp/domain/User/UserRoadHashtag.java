@@ -1,5 +1,6 @@
 package com.promenade.promenadeapp.domain.User;
 
+import com.promenade.promenadeapp.domain.BaseTimeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @Entity
-public class UserRoadHashtag {
+public class UserRoadHashtag extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

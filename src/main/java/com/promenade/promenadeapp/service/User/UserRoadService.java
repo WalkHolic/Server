@@ -3,6 +3,7 @@ package com.promenade.promenadeapp.service.User;
 import com.promenade.promenadeapp.domain.User.UserRoad;
 import com.promenade.promenadeapp.domain.User.UserRoadRepository;
 import com.promenade.promenadeapp.dto.User.UserRoadNearInterface;
+import com.promenade.promenadeapp.dto.User.UserRoadUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -67,6 +68,16 @@ public class UserRoadService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 UserRoad가 없습니다. id = " + id));
 
         return userRoadRepository.save(userRoad);
+    }
+
+    public UserRoad update(Long id, UserRoadUpdateRequestDto requestDto) {
+        UserRoad userRoad = userRoadRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 산책로가 없습니다. id=" + id));
+        if (requestDto.getTrailName() == null || requestDto.getTrailName().isBlank()) {
+            throw new IllegalArgumentException("산책로 이름은 필수입니다.");
+        }
+
+        return userRoad.update(requestDto.getTrailName(), requestDto.getDescription(), requestDto.getPicture());
     }
 
     public List<UserRoadNearInterface> findNearUserRoads(double lat, double lng) {

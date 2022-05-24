@@ -78,4 +78,30 @@ public class UserRoadHashtagService {
     public List<UserRoadHashtag> findByHashtag(String hashtag) {
         return userRoadHashtagRepository.findByHashtag(hashtag);
     }
+
+    public void delete(UserRoadHashtag userRoadHashtag) {
+        userRoadHashtagRepository.delete(userRoadHashtag);
+    }
+
+    public void update(UserRoad userRoad, List<String> hashtags) {
+        List<UserRoadHashtag> foundHashtags = userRoadHashtagRepository.findByUserRoadId(userRoad.getId());
+        // 기존 해시태그 삭제 (개수가 다를 수 있기 때문)
+        for (UserRoadHashtag foundHashtag : foundHashtags) {
+            userRoadHashtagRepository.delete(foundHashtag);
+            log.info("해시태그 삭제. id=" + foundHashtag.getId());
+        }
+
+        // 새로운 해시태그 추가
+        if (!(hashtags == null || hashtags.isEmpty())) {
+            for (String hashtag : hashtags) {
+                UserRoadHashtag userRoadHashtag = UserRoadHashtag.builder()
+                        .id(null)
+                        .userRoad(userRoad)
+                        .hashtag(hashtag)
+                        .build();
+                Long id = userRoadHashtagRepository.save(userRoadHashtag).getId();
+                log.info("해시태그 추가. id=" + id);
+            }
+        }
+    }
 }

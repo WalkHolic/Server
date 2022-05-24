@@ -5,10 +5,7 @@ import com.promenade.promenadeapp.domain.User.UserRoad;
 import com.promenade.promenadeapp.domain.User.UserRoadHashtag;
 import com.promenade.promenadeapp.domain.User.UserRoadPath;
 import com.promenade.promenadeapp.dto.*;
-import com.promenade.promenadeapp.dto.User.UserRoadNearInterface;
-import com.promenade.promenadeapp.dto.User.UserRoadPathResponse;
-import com.promenade.promenadeapp.dto.User.UserRoadRequestDto;
-import com.promenade.promenadeapp.dto.User.UserRoadResponseDto;
+import com.promenade.promenadeapp.dto.User.*;
 import com.promenade.promenadeapp.service.User.UserRoadHashtagService;
 import com.promenade.promenadeapp.service.User.UserRoadPathService;
 import com.promenade.promenadeapp.service.User.UserRoadService;
@@ -232,6 +229,39 @@ public class UserRoadController {
                 .data(responseDtos)
                 .build();
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<?> updateUserRoad(@AuthenticationPrincipal String googleId,
+                                            @PathVariable Long id,
+                                            @RequestBody UserRoadUpdateRequestDto requestDto) {
+        try {
+
+
+            User user = userService.findByGoogleId(googleId);
+            List<UserRoad> foundUserRoads = userRoadService.findByUserGoogleId(googleId);
+            List<Long> roadIds = foundUserRoads.stream().map(road -> road.getId()).collect(Collectors.toList());
+
+            if (!roadIds.contains(id)) {
+                ResponseDto response = ResponseDto.builder().error("접근 가능한 산책로가 아닙니다. id=" + id).build();
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            UserRoad updatedUserRoad = userRoadService.update(id, requestDto);
+            userRoadHashtagService.update(updatedUserRoad, requestDto.getHashtag());
+
+            List<UserRoadResponseDto> userRoadResponseDtos = userRoadHashtagService.addHashtagRoads(foundUserRoads);
+            ResponseDto response = ResponseDto.<UserRoadResponseDto>builder()
+                    .data(userRoadResponseDtos)
+                    .build();
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder()
+                    .error(e.getMessage())
+                    .build();
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 
 }
