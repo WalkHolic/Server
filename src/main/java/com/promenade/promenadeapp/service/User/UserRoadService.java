@@ -47,10 +47,6 @@ public class UserRoadService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 UserRoad가 없습니다. id = " + id));
     }
 
-    public boolean existsById(Long id) {
-        return userRoadRepository.existsById(id);
-    }
-
     public List<UserRoad> deleteUserRoad(UserRoad userRoad) {
         validate(userRoad);
         try {
