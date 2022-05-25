@@ -62,51 +62,58 @@ public class ParkController {
     @PostMapping("/filter")
     public ResponseEntity<?> filtering(@RequestParam double lat, @RequestParam double lng,
                                        @RequestBody ParkFilterDto filterDto) throws JsonProcessingException {
-        List<String> filters = parkService.filtering(filterDto);
-        // 하나도 필터링 체크 안하면 필터링 없이 주변에 있는 공원 조회
-        if (filters.isEmpty()) {
-            List<ParkNearInterface> nearParks = parkService.getNearParks(lat, lng);
-            ResponseDto<ParkNearInterface> response = ResponseDto.<ParkNearInterface>builder()
-                    .data(nearParks)
+        try {
+
+            List<String> filters = parkService.filtering(filterDto);
+            // 하나도 필터링 체크 안하면 필터링 없이 주변에 있는 공원 조회
+            if (filters.isEmpty()) {
+                List<ParkNearInterface> nearParks = parkService.getNearParks(lat, lng);
+                List<ParkResponseDto> responseDtos = nearParks.stream().map(ParkResponseDto::new).collect(Collectors.toList());
+                ResponseDto response = ResponseDto.<ParkResponseDto>builder()
+                        .data(responseDtos)
+                        .build();
+                return ResponseEntity.ok(response);
+            }
+
+            List<ParkNearInterface> parks = new ArrayList<>();
+            List<Long> parkIds = new ArrayList<>();
+            List<Long> duplicatedParkIds = new ArrayList<>();
+            for (String filter : filters) {
+                List<ParkNearInterface> filterParks = parkService.searchByFilters(lat, lng, filter);
+                if (parks.isEmpty()) {
+                    parks.addAll(filterParks);
+                    parkIds.addAll(parks.stream().map(p -> p.getId()).collect(Collectors.toList()));
+                    System.out.println(filter + "옵션의 parkIds = " + parkIds);
+                    continue;
+                }
+                for (ParkNearInterface iterPark : filterParks) {
+                    if (parkIds.contains(iterPark.getId())) {
+                        duplicatedParkIds.add(iterPark.getId());
+                    }
+                }
+                parkIds.clear();
+                parkIds.addAll(duplicatedParkIds);
+                duplicatedParkIds.clear();
+                System.out.println(filter + "옵션의 parkIds = " + parkIds);
+            }
+            List<ParkNearInterface> resultParks = parks.stream().filter(park -> parkIds.contains(park.getId())).collect(Collectors.toList());
+
+            if (resultParks.isEmpty()) {
+                ResponseDto response = ResponseDto.builder()
+                        .error("필터링에 맞는 공원이 없습니다.")
+                        .build();
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            List<ParkResponseDto> responseDtos = resultParks.stream().map(ParkResponseDto::new).collect(Collectors.toList());
+
+            ResponseDto response = ResponseDto.<ParkResponseDto>builder()
+                    .data(responseDtos)
                     .build();
             return ResponseEntity.ok(response);
-        }
-
-        List<ParkNearInterface> parks = new ArrayList<>();
-        List<Long> parkIds = new ArrayList<>();
-        List<Long> duplicatedParkIds = new ArrayList<>();
-        for (String filter : filters) {
-            List<ParkNearInterface> filterParks = parkService.searchByFilters(lat, lng, filter);
-            if (parks.isEmpty()) {
-                parks.addAll(filterParks);
-                parkIds.addAll(parks.stream().map(p -> p.getId()).collect(Collectors.toList()));
-                System.out.println(filter + "옵션의 parkIds = " + parkIds);
-                continue;
-            }
-            for (ParkNearInterface iterPark : filterParks) {
-                if (parkIds.contains(iterPark.getId())) {
-                    duplicatedParkIds.add(iterPark.getId());
-                }
-            }
-            parkIds.clear();
-            parkIds.addAll(duplicatedParkIds);
-            duplicatedParkIds.clear();
-            System.out.println(filter + "옵션의 parkIds = " + parkIds);
-        }
-        List<ParkNearInterface> resultParks = parks.stream().filter(park -> parkIds.contains(park.getId())).collect(Collectors.toList());
-
-        if (resultParks.isEmpty()) {
-            ResponseDto response = ResponseDto.builder()
-                    .error("필터링에 맞는 공원이 없습니다.")
-                    .build();
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder().error(e.getMessage()).build();
             return ResponseEntity.badRequest().body(response);
         }
-
-        List<ParkResponseDto> responseDtos = resultParks.stream().map(ParkResponseDto::new).collect(Collectors.toList());
-
-        ResponseDto response = ResponseDto.<ParkResponseDto>builder()
-                .data(responseDtos)
-                .build();
-        return ResponseEntity.ok(response);
     }
 }
