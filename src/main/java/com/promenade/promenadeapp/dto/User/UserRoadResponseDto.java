@@ -14,7 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 public class UserRoadResponseDto {
 
-    private Double d;
     private Long id;
     private Long userId;
     private String trailName;
@@ -44,7 +43,6 @@ public class UserRoadResponseDto {
 
     // UserRoadHashtagService의 addHashtagRoadsWithD 함수에서 hashtag 추가해서 생성해서, 따로 생성자가 존재하지 않음.
     public UserRoadResponseDto(UserRoadNearInterface userRoad, List<String> hashtags) {
-        this.d = userRoad.getD();
         this.id = userRoad.getId();
         this.userId = userRoad.getUserId();
         this.trailName = userRoad.getTrail_name();
