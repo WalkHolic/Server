@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.promenade.promenadeapp.domain.Park.Park;
 import com.promenade.promenadeapp.dto.Park.ParkFilterDto;
 import com.promenade.promenadeapp.dto.Park.ParkNearInterface;
+import com.promenade.promenadeapp.dto.Park.ParkResponseDto;
 import com.promenade.promenadeapp.dto.ResponseDto;
+import com.promenade.promenadeapp.dto.Road.RoadResponseDto;
 import com.promenade.promenadeapp.service.Park.ParkService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +26,20 @@ public class ParkController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
-        Park park = parkService.findById(id);
-        ResponseDto<Park> response = ResponseDto.<Park>builder()
-                .data(Arrays.asList(park)) // 한 개인데 data 자료형이 List Generic
-                .build();
-        return ResponseEntity.ok(response);
+        try {
+
+            Park park = parkService.findById(id);
+            ParkResponseDto responseDto = new ParkResponseDto(park);
+            ResponseDto response = ResponseDto.<ParkResponseDto>builder()
+                    .data(Arrays.asList(responseDto)) // 한 개인데 data 자료형이 List Generic
+                    .build();
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder()
+                    .error(e.getMessage())
+                    .build();
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 
     @GetMapping("/nearParks")
@@ -40,8 +51,10 @@ public class ParkController {
                     .build();
             return ResponseEntity.badRequest().body(response);
         }
-        ResponseDto<ParkNearInterface> response = ResponseDto.<ParkNearInterface>builder()
-                .data(nearParks)
+        List<ParkResponseDto> responseDtos = nearParks.stream().map(ParkResponseDto::new).collect(Collectors.toList());
+
+        ResponseDto response = ResponseDto.<ParkResponseDto>builder()
+                .data(responseDtos)
                 .build();
         return ResponseEntity.ok(response);
     }
@@ -89,8 +102,10 @@ public class ParkController {
             return ResponseEntity.badRequest().body(response);
         }
 
-        ResponseDto<ParkNearInterface> response = ResponseDto.<ParkNearInterface>builder()
-                .data(resultParks)
+        List<ParkResponseDto> responseDtos = resultParks.stream().map(ParkResponseDto::new).collect(Collectors.toList());
+
+        ResponseDto response = ResponseDto.<ParkResponseDto>builder()
+                .data(responseDtos)
                 .build();
         return ResponseEntity.ok(response);
     }
