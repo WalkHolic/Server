@@ -16,13 +16,15 @@ public class Road {
     private Long id;
 
     @NotNull
-    private String road_name;
+    @Column(name = "road_name")
+    private String roadName;
 
     @NotNull
-    @Column(length = 600)
-    private String road_desc;
+    @Column(name = "road_desc", length = 600)
+    private String roadDesc;
 
-    private String picture_path;
+    @Column(name = "picture_path")
+    private String picturePath;
 
     @NotNull
     private double distance;
@@ -31,31 +33,44 @@ public class Road {
     private String time;
 
     @NotNull
-    private String start_name;
+    @Column(name = "start_name")
+    private String startName;
 
-    private String start_road_addr;
+    @Column(name = "start_road_addr")
+    private String startRoadAddr;
 
-    private String start_lot_addr;
-
-    @NotNull
-    private double start_lat;
-
-    @NotNull
-    private double start_lng;
+    @Column(name = "start_lot_addr")
+    private String startLotAddr;
 
     @NotNull
-    private String agency_tel;
+    @Column(name = "start_lat")
+    private double startLat;
 
     @NotNull
-    private String agency_name;
+    @Column(name = "start_lng")
+    private double startLng;
+
+    @Column(name = "road_path_str", length = 400)
+    private String roadPathStr;
 
     @NotNull
-    private String base_date;
+    @Column(name = "agency_tel")
+    private String agencyTel;
 
     @NotNull
-    private String provider_code;
+    @Column(name = "agency_name")
+    private String agencyName;
 
     @NotNull
-    private String provider_name;
+    @Column(name = "base_date")
+    private String baseDate;
+
+    @NotNull
+    @Column(name = "provider_code")
+    private String providerCode;
+
+    @NotNull
+    @Column(name = "provider_name")
+    private String providerName;
 
 }

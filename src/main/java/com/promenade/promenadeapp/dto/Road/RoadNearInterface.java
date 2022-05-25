@@ -8,6 +8,10 @@ public interface RoadNearInterface {
 
     String getRoad_name();
 
+    String getRoad_desc();
+
+    String getPicture_path();
+
     double getDistance();
 
     String getTime();
@@ -21,5 +25,13 @@ public interface RoadNearInterface {
     double getStart_lat();
 
     double getStart_lng();
+
+    String getRoad_path_str();
+
+    String getAgency_tel();
+
+    String getAgency_name();
+
+    String getProvider_name();
 
 }
