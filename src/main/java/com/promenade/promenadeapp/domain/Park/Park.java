@@ -51,4 +51,8 @@ public class Park {
 
     private String providerName;
 
+    private String pngPath;
+
+    private String hashtag;
+
 }

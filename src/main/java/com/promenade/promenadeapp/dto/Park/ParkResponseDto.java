@@ -27,6 +27,8 @@ public class ParkResponseDto {
     private String manageAgency;
     private String contact;
     private String providerName;
+    private String pngPath;
+    private String hashtag;
 
     public ParkResponseDto(Park park) {
         this.id = park.getId();
@@ -46,6 +48,8 @@ public class ParkResponseDto {
         this.manageAgency = park.getManageAgency();
         this.contact = park.getContact();
         this.providerName = park.getProviderName();
+        this.pngPath = park.getPngPath();
+        this.hashtag = park.getHashtag();
     }
 
     public ParkResponseDto(ParkNearInterface park) {
@@ -66,6 +70,8 @@ public class ParkResponseDto {
         this.manageAgency = park.getManage_agency();
         this.contact = park.getContact();
         this.providerName = park.getProvider_name();
+        this.pngPath = park.getPng_path();
+        this.hashtag = park.getHashtag();
     }
 
 }

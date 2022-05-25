@@ -23,5 +23,6 @@ public interface ParkNearInterface {
     String getData_base_date();
     String getProvider_code();
     String getProvider_name();
-
+    String getPng_path();
+    String getHashtag();
 }

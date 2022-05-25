@@ -44,19 +44,27 @@ public class ParkController {
 
     @GetMapping("/nearParks")
     public ResponseEntity<?> getNearParks(@RequestParam double lat, @RequestParam double lng) {
-        List<ParkNearInterface> nearParks = parkService.getNearParks(lat, lng);
-        if (nearParks.isEmpty()) {
+        try {
+
+            List<ParkNearInterface> nearParks = parkService.getNearParks(lat, lng);
+            if (nearParks.isEmpty()) {
+                ResponseDto response = ResponseDto.builder()
+                        .data(null)
+                        .build();
+                return ResponseEntity.ok(response);
+            }
+            List<ParkResponseDto> responseDtos = nearParks.stream().map(ParkResponseDto::new).collect(Collectors.toList());
+
+            ResponseDto response = ResponseDto.<ParkResponseDto>builder()
+                    .data(responseDtos)
+                    .build();
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
             ResponseDto response = ResponseDto.builder()
-                    .error("주변에 공원이 없습니다.")
+                    .error(e.getMessage())
                     .build();
             return ResponseEntity.badRequest().body(response);
         }
-        List<ParkResponseDto> responseDtos = nearParks.stream().map(ParkResponseDto::new).collect(Collectors.toList());
-
-        ResponseDto response = ResponseDto.<ParkResponseDto>builder()
-                .data(responseDtos)
-                .build();
-        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/filter")
