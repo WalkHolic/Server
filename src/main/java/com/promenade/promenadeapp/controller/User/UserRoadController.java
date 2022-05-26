@@ -40,20 +40,26 @@ public class UserRoadController {
 
     @GetMapping
     public ResponseEntity<?> getUserRoads(@AuthenticationPrincipal String googleId) {
-        List<UserRoad> userRoads = userRoadService.findByUserGoogleId(googleId);
-        if (userRoads.isEmpty()) {
-            ResponseDto response = ResponseDto.builder()
-                    .error("사용자의 커스텀 산책로가 없습니다. userGoogleId = " + googleId)
+        try {
+
+            List<UserRoad> userRoads = userRoadService.findByUserGoogleId(googleId);
+            if (userRoads.isEmpty()) {
+                ResponseDto response = ResponseDto.builder()
+                        .error("사용자의 커스텀 산책로가 없습니다. userGoogleId = " + googleId)
+                        .build();
+                return ResponseEntity.badRequest().body(response);
+            }
+            // UserRoad에 Hashtag 추가해서 응답해주기
+            List<UserRoadResponseDto> responseDtos = userRoadHashtagService.addHashtagRoads(userRoads);
+            ResponseDto<UserRoadResponseDto> response = ResponseDto.<UserRoadResponseDto>builder()
+                    .data(responseDtos)
                     .build();
+
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder().error(e.getMessage()).build();
             return ResponseEntity.badRequest().body(response);
         }
-        // UserRoad에 Hashtag 추가해서 응답해주기
-        List<UserRoadResponseDto> responseDtos = userRoadHashtagService.addHashtagRoads(userRoads);
-        ResponseDto<UserRoadResponseDto> response = ResponseDto.<UserRoadResponseDto>builder()
-                .data(responseDtos)
-                .build();
-
-        return ResponseEntity.ok().body(response);
     }
 
     @PostMapping
@@ -155,84 +161,108 @@ public class UserRoadController {
     @GetMapping("/{id}/paths")
     public ResponseEntity<?> findByUserRoadId(@AuthenticationPrincipal String googleId,
                                                        @PathVariable Long id) {
-        List<UserRoad> foundUserRoads = userRoadService.findByUserGoogleId(googleId);
-        List<Long> roadIds = foundUserRoads.stream().map(road -> road.getId()).collect(Collectors.toList());
-        UserRoad foundUserRoad = userRoadService.findById(id);
+        try {
 
-        // 공유된 산책로가 아니거나, 로그인한 사용자 산책로가 아니면 잘못된 접근 처리
-        if ((foundUserRoad.isShared() == false) && !roadIds.contains(id)) {
-            ResponseDto response = ResponseDto.builder().error("접근 가능한 산책로가 아닙니다. id=" + id).build();
+            List<UserRoad> foundUserRoads = userRoadService.findByUserGoogleId(googleId);
+            List<Long> roadIds = foundUserRoads.stream().map(road -> road.getId()).collect(Collectors.toList());
+            UserRoad foundUserRoad = userRoadService.findById(id);
+
+            // 공유된 산책로가 아니거나, 로그인한 사용자 산책로가 아니면 잘못된 접근 처리
+            if ((foundUserRoad.isShared() == false) && !roadIds.contains(id)) {
+                ResponseDto response = ResponseDto.builder().error("접근 가능한 산책로가 아닙니다. id=" + id).build();
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            ResponseDto<UserRoadPathResponse> response = ResponseDto.<UserRoadPathResponse>builder()
+                    .data(userRoadPathService.findByUserRoadId(id))
+                    .build();
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder().error(e.getMessage()).build();
             return ResponseEntity.badRequest().body(response);
         }
-
-        ResponseDto<UserRoadPathResponse> response = ResponseDto.<UserRoadPathResponse>builder()
-                .data(userRoadPathService.findByUserRoadId(id))
-                .build();
-        return ResponseEntity.ok(response);
 
     }
 
     @GetMapping("/{id}/share")
     public ResponseEntity<?> shareUserRoad(@AuthenticationPrincipal String googleId,
                                            @PathVariable Long id) {
-        List<UserRoad> foundUserRoads = userRoadService.findByUserGoogleId(googleId);
-        List<Long> roadIds = foundUserRoads.stream().map(road -> road.getId()).collect(Collectors.toList());
+        try {
 
-        if (!roadIds.contains(id)) {
-            ResponseDto response = ResponseDto.builder().error("접근 가능한 산책로가 아닙니다. id=" + id).build();
+            List<UserRoad> foundUserRoads = userRoadService.findByUserGoogleId(googleId);
+            List<Long> roadIds = foundUserRoads.stream().map(road -> road.getId()).collect(Collectors.toList());
+
+            if (!roadIds.contains(id)) {
+                ResponseDto response = ResponseDto.builder().error("접근 가능한 산책로가 아닙니다. id=" + id).build();
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            UserRoad userRoad = userRoadService.updateShared(id);
+
+            ResponseDto response = ResponseDto.builder()
+                    .data(Arrays.asList("shared changed. " + "shared: " + userRoad.isShared()))
+                    .build();
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder().error(e.getMessage()).build();
             return ResponseEntity.badRequest().body(response);
         }
-
-        UserRoad userRoad = userRoadService.updateShared(id);
-
-        ResponseDto response = ResponseDto.builder()
-                .data(Arrays.asList("shared changed. " + "shared: " + userRoad.isShared()))
-                .build();
-        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/nearRoads")
     public ResponseEntity<?> getNearRoads(@RequestParam double lat, @RequestParam double lng) {
-        List<UserRoadNearInterface> nearRoads = userRoadService.findNearUserRoads(lat, lng);
-        if (nearRoads.isEmpty()) {
-            ResponseDto response = ResponseDto.builder()
-                    .error("주변에 공유된 사용자 산책로가 없습니다.")
+        try {
+
+            List<UserRoadNearInterface> nearRoads = userRoadService.findNearUserRoads(lat, lng);
+            if (nearRoads.isEmpty()) {
+                ResponseDto response = ResponseDto.builder()
+                        .error("주변에 공유된 사용자 산책로가 없습니다.")
+                        .build();
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            List<UserRoadResponseDto> responseDtos = userRoadHashtagService.addHashtagRoadsWithD(nearRoads);
+            ResponseDto response = ResponseDto.<UserRoadResponseDto>builder()
+                    .data(responseDtos)
                     .build();
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder().error(e.getMessage()).build();
             return ResponseEntity.badRequest().body(response);
         }
-
-        List<UserRoadResponseDto> responseDtos = userRoadHashtagService.addHashtagRoadsWithD(nearRoads);
-        ResponseDto response = ResponseDto.<UserRoadResponseDto>builder()
-                .data(responseDtos)
-                .build();
-        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/hashtag")
     public ResponseEntity<?> findByHashtag(@RequestParam String keyword) {
-        List<UserRoadHashtag> byHashtag = userRoadHashtagService.findByHashtag(keyword);
-        if (byHashtag.isEmpty()) {
-            ResponseDto response = ResponseDto.builder()
-                    .error("해시태그에 맞는 산책로가 하나도 없습니다. 해당 해시태그 = " + keyword)
+        try {
+
+            List<UserRoadHashtag> byHashtag = userRoadHashtagService.findByHashtag(keyword);
+            if (byHashtag.isEmpty()) {
+                ResponseDto response = ResponseDto.builder()
+                        .error("해시태그에 맞는 산책로가 하나도 없습니다. 해당 해시태그 = " + keyword)
+                        .build();
+                return ResponseEntity.badRequest().body(response);
+            }
+            List<UserRoad> userRoadsByHashtag = byHashtag.stream().map(entity -> entity.getUserRoad()).collect(Collectors.toList());
+
+            // shared인 사용자 산책로만 필터링
+            List<UserRoad> userRoads = userRoadsByHashtag.stream().filter(road -> road.isShared() == true).collect(Collectors.toList());
+            if (userRoads.isEmpty()) {
+                ResponseDto response = ResponseDto.builder()
+                        .error("공유된 산책로가 없습니다. 해당 해시태그 = " + keyword)
+                        .build();
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            List<UserRoadResponseDto> responseDtos = userRoadHashtagService.addHashtagRoads(userRoads);
+            ResponseDto response = ResponseDto.<UserRoadResponseDto>builder()
+                    .data(responseDtos)
                     .build();
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder().error(e.getMessage()).build();
             return ResponseEntity.badRequest().body(response);
         }
-        List<UserRoad> userRoadsByHashtag = byHashtag.stream().map(entity -> entity.getUserRoad()).collect(Collectors.toList());
-
-        // shared인 사용자 산책로만 필터링
-        List<UserRoad> userRoads = userRoadsByHashtag.stream().filter(road -> road.isShared() == true).collect(Collectors.toList());
-        if (userRoads.isEmpty()) {
-            ResponseDto response = ResponseDto.builder()
-                    .error("공유된 산책로가 없습니다. 해당 해시태그 = " + keyword)
-                    .build();
-            return ResponseEntity.badRequest().body(response);
-        }
-
-        List<UserRoadResponseDto> responseDtos = userRoadHashtagService.addHashtagRoads(userRoads);
-        ResponseDto response = ResponseDto.<UserRoadResponseDto>builder()
-                .data(responseDtos)
-                .build();
-        return ResponseEntity.ok(response);
     }
 
     @PutMapping("{id}")

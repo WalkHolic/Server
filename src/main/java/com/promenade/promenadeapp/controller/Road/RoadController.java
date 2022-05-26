@@ -52,20 +52,26 @@ public class RoadController {
 
     @GetMapping("/nearRoads")
     public ResponseEntity<?> getNearRoads(@RequestParam double lat, @RequestParam double lng) {
-        List<RoadNearInterface> nearRoads = roadService.getNearRoads(lat, lng);
-        if (nearRoads.isEmpty()) {
-            ResponseDto response = ResponseDto.builder()
-                    .error("주변에 산책로가 없습니다.")
+        try {
+
+            List<RoadNearInterface> nearRoads = roadService.getNearRoads(lat, lng);
+            if (nearRoads.isEmpty()) {
+                ResponseDto response = ResponseDto.builder()
+                        .error("주변에 산책로가 없습니다.")
+                        .build();
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            List<RoadResponseDto> responseDtos = roadHashtagService.addHashtagRoadsInterface(nearRoads);
+
+            ResponseDto response = ResponseDto.<RoadResponseDto>builder()
+                    .data(responseDtos)
                     .build();
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder().error(e.getMessage()).build();
             return ResponseEntity.badRequest().body(response);
         }
-
-        List<RoadResponseDto> responseDtos = roadHashtagService.addHashtagRoadsInterface(nearRoads);
-
-        ResponseDto response = ResponseDto.<RoadResponseDto>builder()
-                .data(responseDtos)
-                .build();
-        return ResponseEntity.ok(response);
     }
 
 

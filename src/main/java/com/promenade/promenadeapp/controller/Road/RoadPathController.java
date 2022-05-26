@@ -23,17 +23,23 @@ public class RoadPathController {
 
     @GetMapping("/roadId/{roadId}")
     public ResponseEntity<?> findByRoadId(@PathVariable Long roadId) {
-        List<RoadPath> foundRoadPaths = roadPathService.findByUserId(roadId);
-        if (foundRoadPaths.isEmpty()) {
-            ResponseDto response = ResponseDto.builder()
-                    .error("해당 산책로의 경로 정보가 없습니다. roadId = " + roadId)
+        try {
+
+            List<RoadPath> foundRoadPaths = roadPathService.findByUserId(roadId);
+            if (foundRoadPaths.isEmpty()) {
+                ResponseDto response = ResponseDto.builder()
+                        .error("해당 산책로의 경로 정보가 없습니다. roadId = " + roadId)
+                        .build();
+                return ResponseEntity.badRequest().body(response);
+            }
+            List<RoadPathResponseDto> responseDto = foundRoadPaths.stream().map(RoadPathResponseDto::new).collect(Collectors.toList());
+            ResponseDto<RoadPathResponseDto> response = ResponseDto.<RoadPathResponseDto>builder()
+                    .data(responseDto)
                     .build();
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder().error(e.getMessage()).build();
             return ResponseEntity.badRequest().body(response);
         }
-        List<RoadPathResponseDto> responseDto = foundRoadPaths.stream().map(RoadPathResponseDto::new).collect(Collectors.toList());
-        ResponseDto<RoadPathResponseDto> response = ResponseDto.<RoadPathResponseDto>builder()
-                .data(responseDto)
-                .build();
-        return ResponseEntity.ok(response);
     }
 }
