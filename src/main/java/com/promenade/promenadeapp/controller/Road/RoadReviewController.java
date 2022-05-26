@@ -38,18 +38,24 @@ public class RoadReviewController {
 
     @GetMapping("/{id}/review")
     public ResponseEntity<?> findByRoadId(@PathVariable Long id) {
-        List<RoadReview> roadReviews = roadReviewService.findByRoadId(id);
-        if (roadReviews.isEmpty()) {
-            ResponseDto response = ResponseDto.builder()
-                    .error("해당 산책로의 리뷰가 없습니다.")
+        try {
+
+            List<RoadReview> roadReviews = roadReviewService.findByRoadId(id);
+            if (roadReviews.isEmpty()) {
+                ResponseDto response = ResponseDto.builder()
+                        .error("해당 산책로의 리뷰가 없습니다.")
+                        .build();
+                return ResponseEntity.badRequest().body(response);
+            }
+            List<RoadReviewResponseDto> responseDtos = roadReviews.stream().map(RoadReviewResponseDto::new).collect(Collectors.toList());
+            ResponseDto response = ResponseDto.<RoadReviewResponseDto>builder()
+                    .data(responseDtos)
                     .build();
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder().error(e.getMessage()).build();
             return ResponseEntity.badRequest().body(response);
         }
-        List<RoadReviewResponseDto> responseDtos = roadReviews.stream().map(RoadReviewResponseDto::new).collect(Collectors.toList());
-        ResponseDto response = ResponseDto.<RoadReviewResponseDto>builder()
-                .data(responseDtos)
-                .build();
-        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{id}/review")
