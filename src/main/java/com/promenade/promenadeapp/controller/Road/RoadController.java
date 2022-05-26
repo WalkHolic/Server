@@ -53,7 +53,12 @@ public class RoadController {
     @GetMapping("/nearRoads")
     public ResponseEntity<?> getNearRoads(@RequestParam double lat, @RequestParam double lng) {
         try {
-
+            if (!roadService.isBoundaryKorea(lat, lng)) {
+                ResponseDto response = ResponseDto.builder()
+                        .error("위경도가 한국을 벗어났습니다.")
+                        .build();
+                return ResponseEntity.badRequest().body(response);
+            }
             List<RoadNearInterface> nearRoads = roadService.getNearRoads(lat, lng);
             if (nearRoads.isEmpty()) {
                 ResponseDto response = ResponseDto.builder()

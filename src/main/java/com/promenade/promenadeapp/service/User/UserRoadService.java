@@ -80,4 +80,9 @@ public class UserRoadService {
         return userRoadRepository.findNearUserRoads(lat, lng);
     }
 
+    public Boolean isBoundaryKorea(double lat, double lng) {
+        if (lat > 38.9 || lat < 33.0 || lng > 132.0 || lng < 124.5) {
+            return false;
+        } else return true;
+    }
 }

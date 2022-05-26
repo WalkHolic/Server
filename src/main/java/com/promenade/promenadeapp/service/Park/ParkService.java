@@ -44,4 +44,10 @@ public class ParkService {
     public List<ParkNearInterface> searchByFilters(double lat, double lng, String filters) {
         return parkRepository.searchByFilters(lat, lng, filters);
     }
+
+    public Boolean isBoundaryKorea(double lat, double lng) {
+        if (lat > 38.9 || lat < 33.0 || lng > 132.0 || lng < 124.5) {
+            return false;
+        } else return true;
+    }
 }
