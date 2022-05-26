@@ -45,13 +45,18 @@ public class ParkController {
     @GetMapping("/nearParks")
     public ResponseEntity<?> getNearParks(@RequestParam double lat, @RequestParam double lng) {
         try {
-
+            if (!parkService.isBoundaryKorea(lat, lng)) {
+                ResponseDto response = ResponseDto.builder()
+                        .error("위경도가 한국을 벗어났습니다.")
+                        .build();
+                return ResponseEntity.badRequest().body(response);
+            }
             List<ParkNearInterface> nearParks = parkService.getNearParks(lat, lng);
             if (nearParks.isEmpty()) {
                 ResponseDto response = ResponseDto.builder()
-                        .data(null)
+                        .error("주변에 공원이 없습니다.")
                         .build();
-                return ResponseEntity.ok(response);
+                return ResponseEntity.badRequest().body(response);
             }
             List<ParkResponseDto> responseDtos = nearParks.stream().map(ParkResponseDto::new).collect(Collectors.toList());
 
@@ -71,7 +76,12 @@ public class ParkController {
     public ResponseEntity<?> filtering(@RequestParam double lat, @RequestParam double lng,
                                        @RequestBody ParkFilterDto filterDto) throws JsonProcessingException {
         try {
-
+            if (!parkService.isBoundaryKorea(lat, lng)) {
+                ResponseDto response = ResponseDto.builder()
+                        .error("위경도가 한국을 벗어났습니다.")
+                        .build();
+                return ResponseEntity.badRequest().body(response);
+            }
             List<String> filters = parkService.filtering(filterDto);
             // 하나도 필터링 체크 안하면 필터링 없이 주변에 있는 공원 조회
             if (filters.isEmpty()) {

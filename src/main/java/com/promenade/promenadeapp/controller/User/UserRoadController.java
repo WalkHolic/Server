@@ -212,7 +212,12 @@ public class UserRoadController {
     @GetMapping("/nearRoads")
     public ResponseEntity<?> getNearRoads(@RequestParam double lat, @RequestParam double lng) {
         try {
-
+            if (!userRoadService.isBoundaryKorea(lat, lng)) {
+                ResponseDto response = ResponseDto.builder()
+                        .error("위경도가 한국을 벗어났습니다.")
+                        .build();
+                return ResponseEntity.badRequest().body(response);
+            }
             List<UserRoadNearInterface> nearRoads = userRoadService.findNearUserRoads(lat, lng);
             if (nearRoads.isEmpty()) {
                 ResponseDto response = ResponseDto.builder()
