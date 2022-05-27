@@ -3,12 +3,8 @@ package com.promenade.promenadeapp.service.Road;
 import com.promenade.promenadeapp.domain.Road.Road;
 import com.promenade.promenadeapp.domain.Road.RoadHashtag;
 import com.promenade.promenadeapp.domain.Road.RoadHashtagRepository;
-import com.promenade.promenadeapp.domain.User.UserRoad;
-import com.promenade.promenadeapp.domain.User.UserRoadHashtag;
 import com.promenade.promenadeapp.dto.Road.RoadNearInterface;
 import com.promenade.promenadeapp.dto.Road.RoadResponseDto;
-import com.promenade.promenadeapp.dto.User.UserRoadNearInterface;
-import com.promenade.promenadeapp.dto.User.UserRoadResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -46,7 +42,6 @@ public class RoadHashtagService {
         for (Road road : roads) {
             Long roadId = road.getId();
             List<String> hashtagsByRoadId = findHashtagsByRoadId(roadId);
-
             RoadResponseDto roadResponseDto = new RoadResponseDto(road, hashtagsByRoadId);
             responseDtos.add(roadResponseDto);
         }
@@ -60,7 +55,6 @@ public class RoadHashtagService {
             Long roadId = road.getId();
             List<String> hashtagsByRoadId = findHashtagsByRoadId(roadId);
             RoadResponseDto roadResponseDto = new RoadResponseDto(road, hashtagsByRoadId);
-
             responseDtos.add(roadResponseDto);
         }
         return responseDtos;
