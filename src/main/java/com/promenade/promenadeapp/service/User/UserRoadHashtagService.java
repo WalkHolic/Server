@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -19,7 +20,13 @@ public class UserRoadHashtagService {
 
     private final UserRoadHashtagRepository userRoadHashtagRepository;
 
+    private final List<String> hashtagType = Arrays.asList(new String[]{"나들이", "물놀이", "아이와함께",
+            "걷기좋은", "드라이브코스", "데이트코스", "분위기좋은", "런닝", "벚꽃명소", "힐링"});
+
     public Long save(UserRoadHashtag userRoadHashtag) {
+        if (!hashtagType.contains(userRoadHashtag.getHashtag())) {
+            throw new RuntimeException("해시태그 타입에 맞지 않는 키워드를 입력하셨습니다.");
+        }
         return userRoadHashtagRepository.save(userRoadHashtag).getId();
     }
 
@@ -39,7 +46,6 @@ public class UserRoadHashtagService {
         for (UserRoad tmpUserRoad : userRoads) {
             Long roadId = tmpUserRoad.getId();
             List<String> hashtagsByRoadId = findHashtagsByRoadId(roadId);
-
             UserRoadResponseDto userRoadResponseDto = new UserRoadResponseDto(tmpUserRoad, hashtagsByRoadId);
             responseDtos.add(userRoadResponseDto);
         }
@@ -53,7 +59,6 @@ public class UserRoadHashtagService {
             Long roadId = tmpUserRoad.getId();
             List<String> hashtagsByRoadId = findHashtagsByRoadId(roadId);
             UserRoadResponseDto userRoadResponseDto = new UserRoadResponseDto(tmpUserRoad, hashtagsByRoadId);
-
             responseDtos.add(userRoadResponseDto);
         }
         return responseDtos;
@@ -74,10 +79,12 @@ public class UserRoadHashtagService {
             userRoadHashtagRepository.delete(foundHashtag);
             log.info("해시태그 삭제. id=" + foundHashtag.getId());
         }
-
         // 새로운 해시태그 추가
         if (!(hashtags == null || hashtags.isEmpty())) {
             for (String hashtag : hashtags) {
+                if (!hashtagType.contains(hashtag)) {
+                    throw new RuntimeException("해시태그 타입에 맞지 않는 키워드를 입력하셨습니다.");
+                }
                 UserRoadHashtag userRoadHashtag = UserRoadHashtag.builder()
                         .id(null)
                         .userRoad(userRoad)
@@ -88,4 +95,5 @@ public class UserRoadHashtagService {
             }
         }
     }
+
 }
