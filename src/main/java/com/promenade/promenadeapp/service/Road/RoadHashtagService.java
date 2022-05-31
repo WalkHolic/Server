@@ -20,13 +20,7 @@ public class RoadHashtagService {
     private final RoadHashtagRepository roadHashtagRepository;
 
     public List<String> findHashtagsByRoadId(Long roadId) {
-        List<RoadHashtag> hashTags = roadHashtagRepository.findByRoadId(roadId);
-        List<String> result = new ArrayList<>();
-        for (RoadHashtag hashTag : hashTags) {
-            String hashtag = hashTag.getHashtag();
-            result.add(hashtag);
-        }
-        return result;
+        return roadHashtagRepository.findDistinctHashtagByRoadId(roadId);
     }
 
     public RoadResponseDto addHashtagRoad(Road road) {
