@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import javax.persistence.Column;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,6 +21,8 @@ public class UserRoadResponseDto {
     private String description;
     private double distance;
     private String startAddr;
+    private double startLat;
+    private double startLng;
     private boolean isShared;
     private String picture;
     private List<String> hashtag;
@@ -33,6 +36,8 @@ public class UserRoadResponseDto {
         this.trailName = userRoad.getTrailName();
         this.description = userRoad.getDescription();
         this.distance = userRoad.getDistance();
+        this.startLat = userRoad.getStartLat();
+        this.startLng = userRoad.getStartLng();
         this.startAddr = userRoad.getStartAddr();
         this.isShared = userRoad.isShared();
         this.picture = userRoad.getPicture();
@@ -48,6 +53,8 @@ public class UserRoadResponseDto {
         this.trailName = userRoad.getTrail_name();
         this.description = userRoad.getDescription();
         this.distance = userRoad.getDistance();
+        this.startLat = userRoad.getStart_lat();
+        this.startLng = userRoad.getStart_lng();
         this.startAddr = userRoad.getStart_addr();
         this.isShared = (userRoad.getIs_shared().equalsIgnoreCase("Y") ? true : false);
         this.picture = userRoad.getPicture();
