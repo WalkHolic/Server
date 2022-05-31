@@ -1,10 +1,12 @@
 package com.promenade.promenadeapp.controller.User;
 
+import com.promenade.promenadeapp.domain.Road.Road;
 import com.promenade.promenadeapp.domain.User.User;
 import com.promenade.promenadeapp.domain.User.UserRoad;
 import com.promenade.promenadeapp.domain.User.UserRoadHashtag;
 import com.promenade.promenadeapp.domain.User.UserRoadPath;
 import com.promenade.promenadeapp.dto.*;
+import com.promenade.promenadeapp.dto.Road.RoadResponseDto;
 import com.promenade.promenadeapp.dto.User.*;
 import com.promenade.promenadeapp.service.Road.StorageService;
 import com.promenade.promenadeapp.service.User.UserRoadHashtagService;
@@ -159,7 +161,7 @@ public class UserRoadController {
     }
 
     @GetMapping("/{id}/paths")
-    public ResponseEntity<?> findByUserRoadId(@AuthenticationPrincipal String googleId,
+    public ResponseEntity<?> findPathsByUserRoadId(@AuthenticationPrincipal String googleId,
                                                        @PathVariable Long id) {
         try {
 
@@ -308,4 +310,21 @@ public class UserRoadController {
         }
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+        try {
+
+            UserRoad userRoad = userRoadService.findById(id);
+            UserRoadResponseDto userRoadResponseDto = userRoadHashtagService.addHashtagRoad(userRoad);
+            ResponseDto response = ResponseDto.<UserRoadResponseDto>builder()
+                    .data(Arrays.asList(userRoadResponseDto)) // 한 개이지만 data 자체가 List Generic여서 List로 바꿔주기
+                    .build();
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder()
+                    .error(e.getMessage())
+                    .build();
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
 }

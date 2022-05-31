@@ -1,8 +1,10 @@
 package com.promenade.promenadeapp.service.User;
 
+import com.promenade.promenadeapp.domain.Road.Road;
 import com.promenade.promenadeapp.domain.User.UserRoad;
 import com.promenade.promenadeapp.domain.User.UserRoadHashtag;
 import com.promenade.promenadeapp.domain.User.UserRoadHashtagRepository;
+import com.promenade.promenadeapp.dto.Road.RoadResponseDto;
 import com.promenade.promenadeapp.dto.User.UserRoadNearInterface;
 import com.promenade.promenadeapp.dto.User.UserRoadResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,13 @@ public class UserRoadHashtagService {
             result.add(hashtag);
         }
         return result;
+    }
+
+    public UserRoadResponseDto addHashtagRoad(UserRoad userRoad) {
+        Long userRoadId = userRoad.getId();
+        List<String> hashtagsByRoadId = findHashtagsByRoadId(userRoadId);
+        UserRoadResponseDto roadResponseDto = new UserRoadResponseDto(userRoad, hashtagsByRoadId);
+        return roadResponseDto;
     }
 
     public List<UserRoadResponseDto> addHashtagRoads(List<UserRoad> userRoads) {
