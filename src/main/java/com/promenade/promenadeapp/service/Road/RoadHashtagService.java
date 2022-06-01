@@ -1,8 +1,6 @@
 package com.promenade.promenadeapp.service.Road;
 
-import com.promenade.promenadeapp.domain.Road.Road;
-import com.promenade.promenadeapp.domain.Road.RoadHashtag;
-import com.promenade.promenadeapp.domain.Road.RoadHashtagRepository;
+import com.promenade.promenadeapp.domain.Road.*;
 import com.promenade.promenadeapp.dto.Road.RoadNearInterface;
 import com.promenade.promenadeapp.dto.Road.RoadResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +16,8 @@ import java.util.List;
 public class RoadHashtagService {
 
     private final RoadHashtagRepository roadHashtagRepository;
+
+    private final RoadReviewRepository roadReviewRepository;
 
     public List<String> findHashtagsByRoadId(Long roadId) {
         return roadHashtagRepository.findDistinctHashtagByRoadId(roadId);
