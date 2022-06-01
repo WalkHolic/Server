@@ -79,5 +79,26 @@ public class RoadController {
         }
     }
 
+    @GetMapping("/hashtag")
+    public ResponseEntity<?> findByHashtag(@RequestParam String keyword) {
+        try {
+            List<RoadHashtag> byHashtag = roadHashtagService.findByHashtag(keyword);
+            if (byHashtag.isEmpty()) {
+                ResponseDto response = ResponseDto.builder()
+                        .error("수원 지역에 해당 해시태그에 맞는 산책로가 없습니다. keyword=" + keyword)
+                        .build();
+                return ResponseEntity.badRequest().body(response);
+            }
+            List<Road> roadsByHashtag = byHashtag.stream().map(entity -> entity.getRoad()).collect(Collectors.toList());
 
+            List<RoadResponseDto> responseDtos = roadHashtagService.addHashtagRoads(roadsByHashtag);
+            ResponseDto response = ResponseDto.<RoadResponseDto>builder()
+                    .data(responseDtos)
+                    .build();
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ResponseDto response = ResponseDto.builder().error(e.getMessage()).build();
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
 }
