@@ -140,6 +140,8 @@ public class ParkReviewController {
             String pictureUrl = null;
             if (!(thumbnail == null || thumbnail.isEmpty())) {
                 pictureUrl = storageService.uploadFile(thumbnail);
+            } else if (foundParkReview.getPngPath() != null) {
+                pictureUrl = foundParkReview.getPngPath();
             }
             ParkReview updatedParkReview = parkReviewService.update(id, reviewRequestDto, pictureUrl);
             Long savedId = parkReviewService.save(updatedParkReview); // 업데이트 후 저장해줘야 DB에 반영된다.
