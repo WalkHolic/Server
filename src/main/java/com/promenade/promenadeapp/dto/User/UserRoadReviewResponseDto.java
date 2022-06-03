@@ -16,6 +16,7 @@ public class UserRoadReviewResponseDto {
     private Long userId;
     private String userName;
     private Long userRoadId;
+    private String name;
     private double score;
     private String content;
     private String pngPath;
@@ -27,6 +28,7 @@ public class UserRoadReviewResponseDto {
         this.userId = userRoadReview.getUser().getId();
         this.userName = userRoadReview.getUser().getName();
         this.userRoadId = userRoadReview.getUserRoad().getId();
+        this.name = userRoadReview.getUserRoad().getTrailName();
         this.score = userRoadReview.getScore();
         this.content = userRoadReview.getContent();
         this.pngPath = userRoadReview.getPngPath();
