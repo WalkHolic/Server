@@ -42,15 +42,61 @@ git clone https://github.com/WalkHolic/Server.git
 ## REST API
 ### API Reference
 - URI: https://walkhoic.shop - This is WalkHolic API Base url. You can use your own localhost server link instead this Link. (http://localhost:8080)
-### Park API
+### Login API
+| Login API                    | URL                                        | HTTP Method |
+| ---------------------------- | ------------------------------------------ | ----------- |
+| Google Login                 | /auth/google                               | POST        |
+
+### Park API (공원)
 | Park API                     | URL                                        | HTTP Method |
 | ---------------------------- | ------------------------------------------ | ----------- |
-| Park List                    | /park/{id}                                 | GET         |
+| Park Info                    | /park/{id}                                 | GET         |
 | Park List within 5km         | /park/nearParks?lat={lat}&lng={lng}        | GET         |
 | Filtering Option Park List   | /park/filter?lat={lat}&lng={lng}           | POST        |
 | Create Park Review           | /park/{id}/review                          | POST        |
 | Retrieve Park Review         | /park/{id}/review                          | GET         |
 | Update Park Review           | /park/review/{id}                          | DELETE      |
 | Delete Park Review           | /park/review/{id}                          | PUT         |
+
+### Road API (산책로)
+| Road API                     | URL                                        | HTTP Method |
+| ---------------------------- | ------------------------------------------ | ----------- |
+| Road Info                    | /road/{id}                                 | GET         |
+| Road List within 5km         | /road/nearRoads/?lat={lat}&lng={lng}       | GET         |
+| Road Path                    | /road/path/roadId/{id}                     | GET         |
+| Road Hashtag                 | /road/hashtag?keyword={keyword}            | GET         |
+| Create Road Review           | /road/{id}/review                          | POST        |
+| Retrieve Road Review         | /road/{id}/review                          | GET         |
+| Update Road Review           | /road/review/{id}                          | DELETE      |
+| Delete Road Review           | /road/review/{id}                          | PUT         |
+
+### UserRoad API (사용자 산책로)
+| UserRoad API                 | URL                                        | HTTP Method |
+| ---------------------------- | ------------------------------------------ | ----------- |
+| UserRoad Info                | /user/road/{id}                            | GET         |
+| UserRoad List within 5km     | /user/road/nearRoads/?lat={lat}&lng={lng}  | GET         |
+| UserRoad Path                | /user/road/{id}/paths                      | GET         |
+| UserRoad Hashtag             | /user/road/hashtag?keyword={keyword}       | GET         |
+| Create UserRoad Review       | /userRoad/{id}/review                      | POST        |
+| Retrieve UserRoad Review     | /userRoad/{id}/review                      | GET         |
+| Update UserRoad Review       | /userRoad/review/{id}                      | DELETE      |
+| Delete UserRoad Review       | /userRoad/review/{id}                      | PUT         |
+| Create UserRoad              | /user/road                                 | POST        |
+
+### My Page (내 산책로, 내 리뷰 관리)
+| MyRoad API                   | URL                                        | HTTP Method |
+| ---------------------------- | ------------------------------------------ | ----------- |
+| My UserRoad List             | /user/road                                 | GET         |
+| Share My UserRoad to Public  | /user/road/{id}/share                      | GET         |
+| Update My UserRoad           | /user/road/{id}                            | PUT         |
+| Delete My UserRoad           | /user/road/{id}                            | DELETE      |
+
+| MyReview API                 | URL                                        | HTTP Method |
+| ---------------------------- | ------------------------------------------ | ----------- |
+| My Park Review               | /park/user/review                          | GET         |
+| My Road Review               | /road/user/review                          | GET         |
+| My UserRoad Review           | /userRoad/user/review                      | GET         |
+
+
 
 
