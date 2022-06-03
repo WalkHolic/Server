@@ -173,6 +173,8 @@ public class UserRoadReviewController {
             String pictureUrl = null;
             if (!(thumbnail == null || thumbnail.isEmpty())) {
                 pictureUrl = storageService.uploadFile(thumbnail);
+            } else if (foundUserRoadReview.getPngPath() != null) {
+                pictureUrl = foundUserRoadReview.getPngPath();
             }
 
             UserRoadReview userRoadReview = userRoadReviewService.update(id, reviewRequestDto, pictureUrl);
